@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<!--[if IE 9 ]><html class="ie9"><![endif]--><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="UTF-8">
+    <meta name="description" content="china-vis 2020">
+    <meta name="keywords" content="Super Admin, Template, Bootstrap">
+    <title>COVID19-VIS</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="coranavirus visualization" />
+    <meta name="author" content="kylinchen" />
+    <meta name="Copyright" content="2020" />
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="static/js/bootstrap-3.3.4.css">
+    <link rel="stylesheet" type="text/css" href="static/js/font-awesome.4.6.0.css">
+    <link href="static/css/animate.min.css" rel="stylesheet">
+    <link href="static/css/form.css" rel="stylesheet">
+    <link href="static/css/calendar.css" rel="stylesheet">
+    <link href="static/css/media-player.css" rel="stylesheet">
+    <link href="static/css/style.css" rel="stylesheet">
+    <link href="static/css/icons.css" rel="stylesheet">
+    <link href="static/css/generics.css" rel="stylesheet">
+    <!--<link rel="stylesheet" href="css/reset.css">-->
+    <link rel="stylesheet" href="static/css/jquery.hotspot.css">
+</head>
+
+<style type="text/css">
+    .r_out {width:120px; height:120px; border:2px solid #d9d9d9; background:#fff; box-shadow:3px 3px 5px #bfbfbf; -webkit-box-shadow:3px 3px 5px #bfbfbf; -moz-box-shadow:3px 3px 5px #bfbfbf; -ms-box-shadow:3px 3px 5px #bfbfbf; border-radius:50%; -webkit-border-radius:50%; -moz-border-radius:50%; -ms_border-radius:50%; display:inline-block; margin-right:90px; position:relative;}
+    .r_out p {position:absolute; /**bottom:-50px;*/ color:#fff; text-align:center; margin:0 auto; width:100%; font-size:14px; line-height:1.5; font-weight:bold;}
+
+    .r_in {width:120px; height:120px; border:10px solid #fff; border-radius:50%; -webkit-border-radius:50%; -moz-border-radius:50%; -ms_border-radius:50%; overflow:hidden; position:relative;}
+    .r_c {width:120px; height:120px; position:absolute; bottom:0; left:0; height:0;}
+    .c1 {background:#fbad4c;}
+    .c2 {background:#fff143;}
+    .c3 {background:#c9dd22;}
+    .c4 {background:#00e079;}
+    .c5 {background:#0eb83a;}
+    .r_num {color:#404040; font-size:23px; line-height:1.5; font-weight:bold; position:absolute; top:50%; margin-top:-25px; text-align:center; width:100%;}
+</style>
+<body id="skin-blur-blue">
+<header id="header" class="media">
+    <a href="" id="menu-toggle"></a>
+    <a class="logo pull-left" href="index.html" style="width: 233px">COVID19-VIS</a>
+
+    <div class="media-body">
+        <div class="media" id="top-menu">
+            <div id="time" class="pull-right">
+                <span id="hours"></span>
+                :
+                <span id="min"></span>
+                :
+                <span id="sec"></span>
+            </div>
+
+            <div class="media-body">
+                <input type="text" class="main-search">
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div class="clearfix"></div>
+
+<section id="main" class="p-relative" role="main">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" style="width: 233px">
+        <!-- Sidbar Widgets -->
+        <div class="side-widgets overflow">
+
+            <!-- Calendar -->
+            <div class="s-widget m-b-25">
+                <div id="sidebar-calendar"></div>
+            </div>
+
+
+            <div class="tile">
+                <h2 class="tile-title">系统导航</h2>
+                <div class="list-group list-group-flat m-t-15">
+                    <a href="#" class="list-group-item"><span class="message-tag progress-bar-warning"></span>A</a>
+                    <a href="#" class="list-group-item"><span class="message-tag progress-bar-danger"></span>B</a>
+                    <a href="#" class="list-group-item"><span class="message-tag progress-bar-info"></span>C</a>
+                    <a href="#" class="list-group-item"><span class="message-tag progress-bar-success"></span>D</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Side Menu -->
+        <ul class="list-unstyled side-menu">
+            <li class="active">
+                <a class="sa-side-widget" href="/demo1">
+                    <span class="menu-item">疫情可视化</span>
+                </a>
+            </li>
+            <li>
+                <a class="sa-side-photos" href="/demo2">
+                    <span class="menu-item">舆情可视化</span>
+                </a>
+            </li>
+            <li class="dropdown">
+                <a class="sa-side-page" href="/demo1">
+                    <span class="menu-item">系统设置</span>
+                </a>
+            </li>
+        </ul>
+
+    </aside>
+
+    <!-- Content -->
+
+    <section id="content" class="container" style="margin-left: 233px">
+
+        <ol class="breadcrumb hidden-xs">
+            <li><a href="#">主页</a></li>
+            <li><a href="#">系统总览</a></li>
+            <li class="active">首页</li>
+        </ol>
+
+        <h4 class="page-title">疫情影响因素可视化</h4>
+
+        <div class="block-area">
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- Main Chart -->
+                    <div class="tile">
+                        <h2 class="tile-title">Charts1</h2>
+                        <div class="tile-config dropdown">
+                            <a data-toggle="dropdown" href="" class="tile-menu"></a>
+                            <ul class="dropdown-menu pull-right text-right">
+                                <li><a class="tile-info-toggle" href="">Chart Information</a></li>
+                                <li><a href="">Refresh</a></li>
+                                <li><a href="">Settings</a></li>
+                            </ul>
+                        </div>
+                        <div class="p-10">
+                            <div id="line-chart" class="chart1" style="height: 900px"></div>
+
+                            <div class="chart-info">
+                                <ul class="list-unstyled">
+                                    <li class="m-b-10">
+                                        Some information
+                                        <span class="pull-right text-muted t-s-0">
+
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <small>
+                                            a info
+                                            <span class="pull-right text-muted t-s-0">
+
+                                            </span>
+                                        </small>
+
+                                    </li>
+                                    <li>
+                                        <small>
+                                            b info
+                                            <span class="pull-right text-muted t-s-0">
+
+                                            </span>
+                                        </small>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  Recent Postings -->
+
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- USA Map -->
+                    <div class="tile">
+                        <h2 class="tile-title">Charts2</h2>
+                        <div class="tile-config dropdown">
+                            <a data-toggle="dropdown" href="" class="tile-menu"></a>
+                            <ul class="dropdown-menu pull-right text-right">
+                                <li><a href="">Refresh</a></li>
+                                <li><a href="">Settings</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="container" id="container1">
+
+                            <div class="p-t-10 p-r-5 p-b-5">
+                                <div id="chart2" style="height: 270px"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Chart -->
+                    <div class="tile">
+                        <h2 class="tile-title">Charts3</h2>
+                        <div class="tile-config dropdown">
+                            <a data-toggle="dropdown" href="" class="tile-menu"></a>
+                            <ul class="dropdown-menu pull-right text-right">
+                                <li><a href="">Refresh</a></li>
+                                <li><a href="">Settings</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="p-t-10 p-r-5 p-b-5">
+                            <div id="chart3" style="height: 270px"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- Activity -->
+                    <div class="tile">
+                        <h2 class="tile-title">Charts4</h2>
+                        <div class="tile-config dropdown">
+                            <a data-toggle="dropdown" href="" class="tile-menu"></a>
+                            <ul class="dropdown-menu pull-right text-right">
+                                <li><a href="">Refresh</a></li>
+                                <li><a href="">Settings</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="p-t-10 p-r-5 p-b-5">
+                            <div id="chart4" style="height: 240px"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- Older IE Message -->
+    <!--[if lt IE 9]>
+    <div class="ie-block">
+        <h1 class="Ops">Ooops!</h1>
+        <p>You are using an outdated version of Internet Explorer, upgrade to any of the following web browser in order to access the maximum functionality of this website. </p>
+        <ul class="browsers">
+            <li>
+                <a href="https://www.google.com/intl/en/chrome/browser/">
+                    <img src="img/browsers/chrome.png" alt="">
+                    <div>Google Chrome</div>
+                </a>
+            </li>
+            <li>
+                <a href="http://www.mozilla.org/en-US/firefox/new/">
+                    <img src="img/browsers/firefox.png" alt="">
+                    <div>Mozilla Firefox</div>
+                </a>
+            </li>
+            <li>
+                <a href="http://www.opera.com/computer/windows">
+                    <img src="img/browsers/opera.png" alt="">
+                    <div>Opera</div>
+                </a>
+            </li>
+            <li>
+                <a href="http://safari.en.softonic.com/">
+                    <img src="img/browsers/safari.png" alt="">
+                    <div>Safari</div>
+                </a>
+            </li>
+            <li>
+                <a href="http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-10/worldwide-languages">
+                    <img src="img/browsers/ie.png" alt="">
+                    <div>Internet Explorer(New)</div>
+                </a>
+            </li>
+        </ul>
+        <p>Upgrade your browser for a Safer and Faster web experience. <br/>Thank you for your patience...</p>
+    </div>
+    <![endif]-->
+</section>
+
+<!-- Javascript Libraries -->
+<!-- jQuery -->
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script> <!-- jQuery Library -->
+<script src="http://www.jq22.com/jquery/jquery-ui-1.11.0.js"></script> <!-- jQuery UI -->
+<script src="static/js/jquery.easing.1.3.js"></script> <!-- jQuery Easing - Requirred for Lightbox + Pie Charts-->
+
+<!-- Bootstrap -->
+<script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
+
+<!-- Charts -->
+<script src="static/js/charts/jquery.flot.js"></script> <!-- Flot Main -->
+<script src="static/js/charts/jquery.flot.time.js"></script> <!-- Flot sub -->
+<script src="static/js/charts/jquery.flot.animator.min.js"></script> <!-- Flot sub -->
+<script src="static/js/charts/jquery.flot.resize.min.js"></script> <!-- Flot sub - for repaint when resizing the screen -->
+
+<script src="static/js/sparkline.min.js"></script> <!-- Sparkline - Tiny charts -->
+<script src="static/js/easypiechart.js"></script> <!-- EasyPieChart - Animated Pie Charts -->
+
+<!-- Map -->
+<script src="static/js/maps/jvectormap.min.js"></script> <!-- jVectorMap main library -->
+<script src="static/js/maps/usa.js"></script> <!-- USA Map for jVectorMap -->
+
+<!--Media Player-->
+<script src="static/js/media-player.min.js"></script> <!-- USA Map for jVectorMap -->
+
+<!--  Form Related -->
+<script src="static/js/icheck.js"></script> <!-- Custom Checkbox + Radio -->
+
+<!-- UX -->
+<script src="static/js/scroll.min.js"></script> <!-- Custom Scrollbar -->
+
+<!-- Other -->
+<script src="static/js/calendar.min.js"></script> <!-- Calendar -->
+<!--<script src="js/feeds.min.js"></script> &lt;!&ndash; News Feeds &ndash;&gt;-->
+<!--HotSpot of pic-->
+<script src="static/js/modernizr.custom.49511.js"></script>
+<script src="static/js/jquery.hotspot.min.js"></script>
+
+<!-- All JS functions -->
+<script src="static/js/functions.js"></script>
+
+</body>
+</html>
