@@ -1,0 +1,181 @@
+/* china heatmap style */
+
+*{
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    height: 100%;
+    width: 100%;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+#china_heatmap_div{
+    height: 100%; /* adaptable */
+    width: 100%;
+    /* background-color: rgba(70,130,180,0.8); */
+    background-color: white;
+}
+
+/* 南沙群岛画布 */
+#nansha_heatmap_svg{
+    position: absolute;
+    left: 900px;
+    top: 520px;
+    border: 1px solid black;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0);
+}
+/* 按钮绘制选定日期热力图 */
+.case_button{
+    height: 40px;
+    width: 100px;
+    border: 1px solid rgb(236,236,236);
+    border-radius: 6px;
+    background-color: rgb(236,236,236);
+    outline: none;
+    font-weight: bold;
+    color: rgb(80, 80, 80);
+    position: absolute;
+    top:40px;
+}
+.case_button:hover{
+    cursor: pointer;
+}
+#confirmed_button{
+    left: 150px;
+}
+#cured_button{
+    left:300px;
+}
+#dead_button{
+    left:450px;
+}
+
+/* 日期选择样式设置 */
+#date_div{
+    position: absolute;
+    left: 240px;
+    top: 690px;
+    height: 40px;
+    width:800px;
+}
+.date_arrow{
+    height:40px;
+    width:30px;
+}
+.date_arrow:hover{
+    cursor: pointer;
+}
+#date_left_arrow{
+    transform: rotateZ(-90deg);
+    float: left;
+}
+#date_right_arrow{
+    transform: rotateZ(90deg);
+    float: left;
+}
+#date_rect_div{
+    height: 40px;
+    width: 80%;
+    float: left;
+    overflow-x: auto;
+    white-space: nowrap;
+    line-height: 40px;
+}
+#date_rect_div::-webkit-scrollbar { width: 0 !important } /*兼容chrome safari*/
+#date_rect_div { -ms-overflow-style: none; } /*兼容IE 10+*/
+#date_rect_div { overflow: -moz-scrollbars-none; } /*兼容火狐*/
+
+.sub_date_rect_div{
+    line-height: 10px;
+    height: 10px;
+    width: 16px;
+    border: 1px solid black;
+    border-radius: 2px;
+    background-color: white;
+    display: inline-block;
+
+}
+.sub_date_rect_div:hover{
+    cursor: pointer;
+    background-color: rgb(10, 170, 233);
+}
+
+
+/* tooltip类 */
+#my_tooltip {
+    position: absolute;
+    /* border-bottom: 1px dotted black; */
+}
+#my_tooltip .tooltiptext {
+    visibility: visible;
+    background-color: black;
+    min-width: 150px;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 4px 2px 4px 2px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+}
+#my_tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+}
+.my_tooltip_hidden{
+    display: none;
+}
+
+
+#date_tooltip,#default_tooltip {
+    position: absolute;
+}
+#date_tooltip .date_tooltiptext,#default_tooltip .default_tooltiptext {
+    visibility: visible;
+    background-color: black;
+    min-width: 80px;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 2px 1px 3px 1px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -60px;
+}
+#date_tooltip .date_tooltiptext::after,#default_tooltip .default_tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+}
+.date_tooltip_hidden,.default_tooltip_hidden{
+    display: none;
+}
+
+.chinaVis_tile{
+    position: relative;
+    overflow: hidden;
+    height:600px;
+    width: 800px;
+    background-color: red;
+}
+#chinaVis_map_iframe{
+    position: absolute;
+    transform:scale(0.55);
+    left: -400px;top: -170px;
+}
+
