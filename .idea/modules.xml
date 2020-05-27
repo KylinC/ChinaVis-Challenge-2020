@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ChinaVis-Challenge-2020-master.iml" filepath="$PROJECT_DIR$/.idea/ChinaVis-Challenge-2020-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/chinaVis.iml" filepath="$PROJECT_DIR$/.idea/chinaVis.iml" />
     </modules>
   </component>
 </project>
