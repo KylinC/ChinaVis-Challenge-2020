@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body>
+    <div class="container-flex" tabindex="0" hidefocus="true">
+        <div class="box-left">
+            <div class="left-top">
+                <div class="weather-box">
+                    <div class="data">
+                        <p class="time" id="time">00:00:00</p>
+                        <p id="date">2020-5-20 pm Mon</p>
+                    </div>
+                    <div class="weather">
+                        <img id="weatherImg" src="images/weather/weather_img01.png" alt="">
+                        <div id="weather">
+                            <p class="active">多云</p>
+                            <p>16-22℃</p>
+                            <p>上海市闵行区</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="left-center">
+                <div class="title-box">
+                    <h6>chart1</h6>
+                </div>
+                <div class="chart-box">
+                    <!-- 绘图区 -->
+                </div>
+            </div>
+            <div class="left-bottom" class="select">
+                <div class="title-box">
+                    <h6>chart2</h6>
+                </div>
+                <div class="chart-box">
+                    <!-- 绘图区 -->
+                </div>
+            </div>
+        </div>
+
+        <div class="box-center">
+            <div class="center-top">
+                <h1>中国疫情可视化</h1>
+            </div>
+            <div class="center-center">
+                <div class="current-num">
+                    <div id="confirmed" class="case-num">
+                        <div>确诊数</div>
+                        <p>12322</p>
+                    </div>
+                    <div id="cured" class="case-num">
+                        <div>治愈数</div>
+                        <p>12322</p>
+                    </div>
+                    <div id="dead" class="case-num">
+                        <div>死亡数</div>
+                        <p>12322</p>
+                    </div>
+                </div>
+                <img src="images/line_bg.png" alt="">
+                <div class="select-box">
+                    <ul id="barType">
+                        <li class="active" data-value="1">经济</li>
+                        <li data-value="2">舆情</li>
+                    </ul>
+                    <ul id="case-select">
+                        <li class="active" data-value="3">确诊</li>
+                        <li data-value="4">治愈</li>
+                        <li data-value="5">死亡</li>
+                    </ul>
+                </div>
+                <div class="chart-box">
+                    <!-- 绘图区 -->
+                </div>
+            </div>
+        </div>
+
+        <div class="box-right">
+            <div class="right-top">
+                <div class="title-box">
+                    <h6 id="barTitle">chart3</h6>
+                </div>
+                <div class="chart-box">
+                    <!-- 绘图区 -->
+                </div>
+            </div>
+            <div class="right-center">
+                <div class="title-box">
+                    <h6 id="barTitle">chart4</h6>
+                </div>
+                <div class="chart-box">
+                    <!-- 绘图区 -->
+                </div>
+            </div>
+            <div class="right-bottom">
+                <div class="title-box">
+                    <h6 id="barTitle">chart5</h6>
+                </div>
+                <div class="chart-box">
+                    <!-- 绘图区 -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

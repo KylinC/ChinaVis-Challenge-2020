@@ -1,0 +1,21 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.62);
+    font-family: 'Ubuntu', 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
+}
+#error-page{
+    text-align: center;
+    padding-top: 200px;
+    color: white;
+}
+#error-page h1{
+    font-weight: bold;
+}
+.underline{
+    color: rgba(102,255,209,0.95);
+}

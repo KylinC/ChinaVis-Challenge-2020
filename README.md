@@ -1,21 +1,18 @@
-# ChinaVis-Challenge-2020
+#### ChinaVis-Challenge-2020
 
+**1.运行**
 
-
->运行
-
-```bash
+```
 pip install requirements.txt
-
-python server.py
+python app.py
 ```
 
+**2.效果**
 
+![1590586457700](C:\Users\13487\AppData\Roaming\Typora\typora-user-images\1590586457700.png)
 
-> 效果
+**3.添加chart**
 
-![](http://kylinhub.oss-cn-shanghai.aliyuncs.com/2020-05-24-a.jpg)
+![1590586504291](C:\Users\13487\AppData\Roaming\Typora\typora-user-images\1590586504291.png)
 
-**伪登陆界面：点击Sign in直接跳转**
-
-![](http://kylinhub.oss-cn-shanghai.aliyuncs.com/2020-05-24-b.jpg)
+直接在绘图区添加自己的代码
