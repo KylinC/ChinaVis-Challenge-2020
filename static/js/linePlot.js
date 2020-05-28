@@ -70,8 +70,8 @@ function linePlot(province, item) {
         }
 
         var margin = { top: 40, right: 2, bottom: 2, left: 0 },
-            width = 300 - margin.left - margin.right,
-            height = 230 - margin.top - margin.bottom;
+            width = 230 - margin.left - margin.right,
+            height = 170 - margin.top - margin.bottom;
 
         var div = d3.select("#linePlot");
 
@@ -105,9 +105,9 @@ function linePlot(province, item) {
                 .attr("transform", "translate(20," + height + ")")
                 .call(d3.axisBottom(xScale));
 
-            // xAxis.selectAll("line").style("stroke", "rgb(63, 145, 223)");
-            // xAxis.selectAll("path").style("stroke", "rgb(63, 145, 223)");
-            // xAxis.selectAll("text").style("stroke", "rgb(63, 145, 223)");
+            xAxis.selectAll("line").style("stroke", "white");
+            xAxis.selectAll("path").style("stroke", "white");
+            xAxis.selectAll("text").style("stroke", "white");
 
             // Add x axis label
             g.append("text")
@@ -126,9 +126,9 @@ function linePlot(province, item) {
                 .attr("transform", "translate(20," + 0 + ")")
                 .call(d3.axisLeft(yScale));
 
-            // yAxis.selectAll("line").style("stroke", "rgb(63, 145, 223)");
-            // yAxis.selectAll("path").style("stroke", "rgb(63, 145, 223)");
-            // yAxis.selectAll("text").style("stroke", "rgb(63, 145, 223)");
+            yAxis.selectAll("line").style("stroke", "white");
+            yAxis.selectAll("path").style("stroke", "white");
+            yAxis.selectAll("text").style("stroke", "white");
 
             let statusWord = "";
             if(item == "dead") {
@@ -159,8 +159,6 @@ function linePlot(province, item) {
             for (var i = 0; i < xData.length; ++i) {
                 total_data.push([xScale(xRange[i]), yScale(yData[i])]);
             }
-
-            console.log(total_data);
 
             // // Append line
             // g.append("g")
