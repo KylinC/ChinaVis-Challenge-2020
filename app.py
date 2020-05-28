@@ -13,15 +13,19 @@ class Config(object):
 app.config.from_object(Config)
 
 
-@app.route('/home', methods=['POST','GET'])
 @app.route('/', methods=['POST','GET'])
-def home():
-    return render_template('home.html')
+def index():
+    return render_template('index.html')
 
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html',result=404)
 
 
-if __name__ == '__main__':
+from demo import demo1
+app.register_blueprint(demo1.mod1)
+from demo import demo2
+app.register_blueprint(demo2.mod2)
+
+if __name__ == "__main__":
     app.run(debug = True)
