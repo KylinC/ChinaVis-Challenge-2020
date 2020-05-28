@@ -118,8 +118,8 @@
                     .attr("width", x1.bandwidth())
                     .attr("height", d => y(start) - y(d.value))
                     .attr("fill", d => color(d.key));
+
         svg.append("g")
-            
             .call(xAxis);
         svg.append("g")
             .call(yAxis);

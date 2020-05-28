@@ -69,8 +69,25 @@
                         <li data-value="5">死亡</li>
                     </ul>
                 </div>
-                <div class="chart-box">
-                    <!-- 绘图区 -->
+            </div>
+            <div class="center-bottom" id="china_heatmap_chart">
+                <div id="china_heatmap_div">
+                    <div id="date_div">
+                        <img src="static/images/chinaVis-map/arrow.svg" alt="" id="date_left_arrow" class="date_arrow">
+                        <div id="date_rect_div">
+                            <div id="date_tooltip" class="date_tooltip_hidden">
+                                <span class="date_tooltiptext"></span>
+                            </div>
+                            <div id="default_tooltip" class="default_tooltip_hidden">
+                                <span class="default_tooltiptext"></span>
+                            </div>
+                        </div>
+                        <img src="static/images/chinaVis-map/arrow.svg" alt="" id="date_right_arrow" class="date_arrow">
+                    </div>
+                    <!-- tooltip -->
+                    <div id="my_tooltip" class="my_tooltip_hidden">
+                        <span class="tooltiptext"></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -94,9 +111,9 @@
             </div>
             <div class="right-bottom">
                 <div class="title-box">
-                    <h6 id="barTitle">chart5</h6>
+                    <h6 id="barTitle">房地产市场发展情况</h6>
                 </div>
-                <div class="chart-box">
+                <div class="chart-box" id="chart5">
                     <!-- 绘图区 -->
                 </div>
             </div>

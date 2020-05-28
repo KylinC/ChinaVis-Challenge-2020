@@ -8,24 +8,24 @@ function updatePage(){
     /** 按钮监听: 用于选中确诊,治愈,死亡等信息*/
     $("#confirmed_button").click(function(){
         caseType=1;
-        $(".case_button").css({"background-color":"rgb(236,236,236","color":"rgb(80, 80, 80)"});
-        $(this).css({"background-color":"rgb(189, 222, 235)","color":"rgb(10, 170, 233)"});
+        $(".case_button").css({"background-color":"#252525","color":"white"});
+        $(this).css({"background-color":"#0e94eb","color":"white"});
         loadCurrentDateCase();
         mapLabel();
         fillProvinceColor();
     });
     $("#cured_button").click(function(){
         caseType=2;
-        $(".case_button").css({"background-color":"rgb(236,236,236","color":"rgb(80, 80, 80)"});
-        $(this).css({"background-color":"rgb(189, 222, 235)","color":"rgb(10, 170, 233)"});
+        $(".case_button").css({"background-color":"#252525","color":"white"});
+        $(this).css({"background-color":"#0e94eb","color":"white"});
         loadCurrentDateCase();
         mapLabel();
         fillProvinceColor();
     });
     $("#dead_button").click(function(){
         caseType=3;
-        $(".case_button").css({"background-color":"rgb(236,236,236","color":"rgb(80, 80, 80)"});
-        $(this).css({"background-color":"rgb(189, 222, 235)","color":"rgb(10, 170, 233)"});
+        $(".case_button").css({"background-color":"#252525","color":"white"});
+        $(this).css({"background-color":"#0e94eb","color":"white"});
         loadCurrentDateCase();
         mapLabel();
         fillProvinceColor();
@@ -36,9 +36,9 @@ function updatePage(){
         e=e?e:window.event;
         let clickTarget=e.target.id;
         if((/date_2020-[0-9]+-[0-9]+/).test(clickTarget)){
-            currentDateStr=((clickTarget.split("_")[1]).split("-").slice(1)).join("-"); 
-            $(".sub_date_rect_div").css("background-color","white"); 
-            $("#date_2020-"+currentDateStr).css("background-color","rgb(10, 170, 233)"); 
+            currentDateStr=((clickTarget.split("_")[1]).split("-").slice(1)).join("-");
+            $(".sub_date_rect_div").css("background-color","white");
+            $("#date_2020-"+currentDateStr).css("background-color","rgb(10, 170, 233)");
             loadCurrentDateCase();
         }
     }
@@ -46,8 +46,8 @@ function updatePage(){
     d3.selectAll(".china_map")
         .on("mouseover",function(d,i){
             d3.select(this).attr("stroke","rgb(70,130,180)").style("cursor","pointer");
-            let xPosition=parseFloat(d3.event.clientX);
-            let yPosition=parseFloat(d3.event.clientY);
+            let xPosition=d3.event.clientX-$("#china_heatmap_div").offset().left;
+            let yPosition=d3.event.clientY-$("#china_heatmap_div").offset().top;
             d3.select("#my_tooltip")
                 .style("left",(xPosition+6)+"px")
                 .style("top",(yPosition+6)+"px")
@@ -75,8 +75,8 @@ function updatePage(){
         let provinceName=d.properties.name.slice(0,2);
         /** 加载某省具体数据 */
         d3.queue()
-            .defer(d3.json,"http://127.0.0.1:5501/data/geometryProvince/"+d.properties.id+".json?t="+new Date().getTime())
-            .defer(d3.json,"http://127.0.0.1:5501/data/case/case_"+currentDateStr+".json?t="+new Date().getTime())
+            .defer(d3.json,"static/data/chinaVis-map/geometryProvince/"+d.properties.id+".json?t="+new Date().getTime())
+            .defer(d3.json,"static/data/chinaVis-map/case/case_"+currentDateStr+".json?t="+new Date().getTime())
             .await(function(error,mapJson,caseJson){
                 if(error) return console.warn(error);
                 let provinceNameArr=Object.keys(caseJson);
@@ -130,8 +130,8 @@ function updatePage(){
                             }
                         }
                         d3.select(this).attr("stroke","rgb(70,130,180)").style("cursor","pointer");
-                        let xPosition=parseFloat(d3.event.clientX);
-                        let yPosition=parseFloat(d3.event.clientY);
+                        let xPosition=d3.event.clientX-$("#china_heatmap_div").offset().left;
+                        let yPosition=d3.event.clientY-$("#china_heatmap_div").offset().top;
                         d3.select("#my_tooltip")
                             .style("left",(xPosition+6)+"px")
                             .style("top",(yPosition+6)+"px")
@@ -228,8 +228,8 @@ function updatePage(){
                     })
                     .on("mouseover",function(d,i){
                         d3.select(this).style("cursor","pointer");
-                        let xPosition=parseFloat(d3.event.clientX);
-                        let yPosition=parseFloat(d3.event.clientY);
+                        let xPosition=d3.event.clientX-$("#china_heatmap_div").offset().left;
+                        let yPosition=d3.event.clientY-$("#china_heatmap_div").offset().top;
                         d3.select("#my_tooltip")
                             .style("left",(xPosition+6)+"px")
                             .style("top",(yPosition+6)+"px")
@@ -253,7 +253,7 @@ function updatePage(){
                                 if(caseType===1){
                                     return cityName+" 新增确诊: "+caseJson[cityName]['新增确诊'];
                                 }else if(caseType===2){
-                                    return cityName+" 新增治愈: "+caseJson[cityName]['新增治愈'];   
+                                    return cityName+" 新增治愈: "+caseJson[cityName]['新增治愈'];
                                 }else{
                                     return cityName+" 新增死亡: "+caseJson[cityName]['新增死亡'];
                                 }
@@ -285,8 +285,8 @@ function updatePage(){
     d3.selectAll(".china_map_circle")
         .on("mouseover",function(d,i){
             d3.select(this).style("cursor","pointer");
-            let xPosition=parseFloat(d3.event.clientX);
-            let yPosition=parseFloat(d3.event.clientY);
+            let xPosition=d3.event.clientX-$("#china_heatmap_div").offset().left;
+            let yPosition=d3.event.clientY-$("#china_heatmap_div").offset().top;
             d3.select("#my_tooltip")
                 .style("left",(xPosition+6)+"px")
                 .style("top",(yPosition+6)+"px")
@@ -302,16 +302,3 @@ function updatePage(){
         });
 }
 
-    /* 地图缩放 */
-    // var zoom=d3.zoom().on("zoom",zooming);
-    // chinaSvg.call(zoom)
-    //         .call(zoom.transform,d3.zoomIdentity.translate(mapCenterPos.x,mapCenterPos.y).scale(0.2));
-    // function zooming(){
-    //     var offset=[d3.event.transform.x,d3.event.transform.y];
-    //     var newScale=d3.event.transform.k*2000;
-
-    //     chinaProjection.translate([offset[0],offset[1]]).scale(newScale);
-    //     d3.selectAll(".china_map").attr("d",chinaPath);
-    //     d3.selectAll(".island_map").attr("d",chinaPath);
-    //     d3.selectAll(".nansha_map").attr("d",chinaPath);
-    // }
