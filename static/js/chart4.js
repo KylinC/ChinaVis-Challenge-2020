@@ -40,8 +40,7 @@
             series.push(single);
         }
 
-        console.log(series);
-        let height = 220, width = 500;
+        let height = 260, width = 500;
         let margin = ({top: 30, right: 50, bottom: 20, left: 30});
         let labelPadding = 3;
         let y = d3.scaleLinear()
@@ -71,8 +70,30 @@
                 return "#ff8c00";
             }
         };
+        let legend = svg => {
+            const g = svg
+                .attr("transform", `translate(100,10)`)
+                .attr("text-anchor", "end")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 10)
+              .selectAll("g")
+              .data(keys)
+              .join("g")
+                .attr("transform", (d, i) => `translate(0,${i * 20})`);
+            g.append("rect")
+                .attr("x", 0)
+                .attr("width", 25)
+                .attr("height", 3)
+                .attr("fill", d => z(d));
+          
+            g.append("text")
+                .attr("fill", "#cdddf7")
+                .attr("x", -24)
+                .attr("y", 2.5)
+                .attr("dy", "0.35em")
+                .text(d => d);
+          };
 
-        console.log(keys);
         // Draw the figure
         let svg = d3.select("#chart4")
                   .append("svg")
@@ -81,6 +102,9 @@
         svg.append("g")
             .call(xAxis);
 
+        svg.append("g")
+            .call(legend);
+        let diffX = 48.5;
         // Create series
         let serie = svg.append("g")
             .selectAll("g")
@@ -92,7 +116,7 @@
             .attr("stroke", d => z(d[0].key))
             .attr("stroke-width", 1.5)
             .attr("d", d3.line()
-                .x(d => x(d.date))
+                .x(d => x(d.date) + diffX)
                 .y(d => y(d.value)));
 
         serie.append("g")
@@ -106,12 +130,12 @@
               .join("text")
                 .text(d => d.value)
                 .attr("dy", "0.35em")
-                .attr("x", d => x(d.date))
+                .attr("x", d => x(d.date) + diffX)
                 .attr("y", d => y(d.value))
-                .call(text => text.filter((d, i, data) => i === data.length - 1)
-                  .append("tspan")
-                    .attr("font-weight", "bold")
-                    .text(d => ` ${d.key}`))
+                // .call(text => text.filter((d, i, data) => i === data.length - 1)
+                //   .append("tspan")
+                //     .attr("font-weight", "bold")
+                //     .text(d => ` ${d.key}`))
               .clone(true).lower()
                 .attr("fill", "none")
                 .attr("stroke", "white")
