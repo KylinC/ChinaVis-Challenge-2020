@@ -517,10 +517,10 @@ pre {
 
 @media screen and (max-height: 610px) {
     .right-top {
-        height: 49%
+        height: 60%
     }
     .right-center {
-        height: 21%;
+        height: 11%;
     }
     .data-box>.data-number {
         height: 1.4rem;
