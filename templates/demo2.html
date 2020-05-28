@@ -22,9 +22,10 @@
             </div>
             <div class="left-center">
                 <div class="title-box">
+                    <h6>5月15日 Top5 流量新闻知识图谱</h6>
                     <!--Chart1-->
                 </div>
-                <div class="chart-box">
+                <div class="chart-box" id="KG">
                     <!-- 绘图区 -->
                 </div>
             </div>
@@ -45,32 +46,34 @@
             <div class="center-center">
                 <div class="current-num">
                     <div id="confirmed" class="case-num">
-                        <div>确诊数</div>
-                        <p>12322</p>
+                        <div>日期</div>
+                        <p>5月15日</p>
                     </div>
                     <div id="cured" class="case-num">
-                        <div>治愈数</div>
-                        <p>12322</p>
+                        <div>检索关键词</div>
+                        <p>新冠</p>
                     </div>
                     <div id="dead" class="case-num">
-                        <div>死亡数</div>
-                        <p>12322</p>
+                        <div>地区</div>
+                        <p>全国</p>
                     </div>
                 </div>
                 <img src="static/images/system/line_bg.png" alt="">
                 <div class="select-box">
                     <ul id="barType">
-                        <li class="active" data-value="1">经济</li>
-                        <li data-value="2">舆情</li>
+                        <li data-value="1" onclick="window.location.href='/demo1'">经济</li>
+                        <li class="active" data-value="2">舆情</li>
                     </ul>
                     <ul id="case-select">
-                        <li class="active" data-value="3">确诊</li>
-                        <li data-value="4">治愈</li>
-                        <li data-value="5">死亡</li>
+                        <!-- <li class="active" data-value="3"><input type="input"/>确诊</li> -->
+                        <!-- <li data-value="4">治愈</li> -->
+                        <!-- <li data-value="5">死亡</li> -->
+                        <input type="input"/>
                     </ul>
                 </div>
                 <div class="chart-box">
-                    <!-- 绘图区 -->
+                    <!-- 绘图区 --> 
+                    aa
                 </div>
             </div>
         </div>
@@ -104,4 +107,9 @@
     </div>
     <script type="text/javascript" src="static/js/echarts-3.8.5.min.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/paraPoint.js"></script>
+    <script type="text/javascript" src="static/js/demo-temp/layoutKG.js"></script>
+    <script type="text/javascript" src="static/js/demo-temp/china.js"></script>
+    <script>
+        
+    </script>
 {% endblock %}
