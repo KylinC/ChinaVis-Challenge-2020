@@ -257,6 +257,16 @@ pre {
     width: 44%;
     height: 100%;
 }
+.box-center>.chart-box {
+    position: relative;
+    top: 0.50rem;
+    bottom: 0;
+    width: 100%;
+    margin: auto;
+    left: 0;
+    right: 0;
+    height: 70%;
+}
 
 .center-top {
     width: 100%;
@@ -301,6 +311,17 @@ pre {
     display: flex;
     flex-flow: row nowrap;
     justify-content: center;
+}
+
+.center-center>.chart-box {
+    position: absolute;
+    top: 5.00rem;
+    bottom: 0;
+    width: 100%;
+    margin: auto;
+    left: 0;
+    right: 0;
+    height: 7rem;
 }
 
 .current-num> .case-num {
