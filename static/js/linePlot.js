@@ -70,8 +70,8 @@ function linePlot(province, item) {
         }
 
         var margin = { top: 40, right: 2, bottom: 2, left: 0 },
-            width = 300 - margin.left - margin.right,
-            height = 230 - margin.top - margin.bottom;
+            width = 230 - margin.left - margin.right,
+            height = 170 - margin.top - margin.bottom;
 
         var div = d3.select("#linePlot");
 
