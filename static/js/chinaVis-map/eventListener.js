@@ -74,11 +74,16 @@ function updatePage(){
         /** 获取省名字 */
         let provinceName=d.properties.name.slice(0,2);
         /** 加载某省具体数据 */
-        d3.queue()
-            .defer(d3.json,"static/data/chinaVis-map/geometryProvince/"+d.properties.id+".json?t="+new Date().getTime())
-            .defer(d3.json,"static/data/chinaVis-map/case/case_"+currentDateStr+".json?t="+new Date().getTime())
-            .await(function(error,mapJson,caseJson){
-                if(error) return console.warn(error);
+        var files = ["static/data/chinaVis-map/geometryProvince/"+d.properties.id+".json?t="+new Date().getTime(),
+            "static/data/chinaVis-map/case/case_"+currentDateStr+".json?t="+new Date().getTime()];
+        var promises = [];
+        files.forEach(function(url) {
+            promises.push(d3.json(url))
+        });
+
+        Promise.all(promises).then(function(values) {
+                let mapJson=values[0];
+                let caseJson=values[1];
                 let provinceNameArr=Object.keys(caseJson);
                 if(provinceNameArr.indexOf(provinceName)===-1){
                     for(let i in provinceNameArr){

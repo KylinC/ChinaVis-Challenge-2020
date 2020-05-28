@@ -4,6 +4,8 @@
  */
 
 "use strict";
+/** 部分数据初始化 */
+
 /* 变量申请 */
 var viewportWidth=$(document.body).width();
 var viewportHeight=$(document.body).height();
@@ -45,24 +47,40 @@ var currentGlobalMapData={};
 var cityCaseArr={};// 全局保存当前省份的城市案例
 var provincePageFlag=0;
 
-
-/** 部分数据初始化 */
-$("#confirmed_button").css({"background-color":"#0e94eb","color":"white"});
 createDateSeletor();
+$("#confirmed_button").css({"background-color":"#0e94eb","color":"white"});
 
 /* 数据异步加载: 异步任务放入队列，加载完成之后在绘制热力图 */
-d3.queue()
-    .defer(d3.json,"static/data/chinaVis-map/china.json?t="+new Date().getTime())
-    .defer(d3.json, "static/data/chinaVis-map/island.json?t="+new Date().getTime())
-    .defer(d3.json, "static/data/chinaVis-map/nansha.json?t="+new Date().getTime())
-    .await(function(error,mainlandJson,islandJson,nanshaJson,caseCsv) {
-        if (error) return console.warn(error);
-        displayMap(mainlandJson,1);
-        displayMap(islandJson,2);
-        displayMap(nanshaJson,3);
-        mapLabel(1);
-        loadCurrentDateCase(1); // 初始化
-    });
+var files = ["static/data/chinaVis-map/china.json?t="+new Date().getTime(),
+    "static/data/chinaVis-map/island.json?t="+new Date().getTime(),
+    "static/data/chinaVis-map/nansha.json?t="+new Date().getTime()];
+var promises = [];
+files.forEach(function(url) {
+    promises.push(d3.json(url))
+});
+
+Promise.all(promises).then(function(values) {
+    console.log(values[0]);
+    displayMap(values[0],1);
+    displayMap(values[1],2);
+    displayMap(values[2],3);
+    mapLabel(1);
+    loadCurrentDateCase(1); // 初始化
+});
+
+// d3.queue()
+//     .defer(d3.json,"static/data/chinaVis-map/china.json?t="+new Date().getTime())
+//     .defer(d3.json, "static/data/chinaVis-map/island.json?t="+new Date().getTime())
+//     .defer(d3.json, "static/data/chinaVis-map/nansha.json?t="+new Date().getTime())
+//     .await(function(error,mainlandJson,islandJson,nanshaJson,caseCsv) {
+//         if (error) return console.warn(error);
+//         displayMap(mainlandJson,1);
+//         displayMap(islandJson,2);
+//         displayMap(nanshaJson,3);
+//         mapLabel(1);
+//         loadCurrentDateCase(1); // 初始化
+//     });
+
 /* 地图绘制(type:1-mainland,2-island,3-nansha) */
 function displayMap(json,type){
     if(type===1){
@@ -231,7 +249,7 @@ function fillProvinceColor(){
 /* 点击后显示当天热力图 */
 function loadCurrentDateCase(){
     console.log("invoke loadCurrentDateCase()!"+new Date().getTime());
-    d3.json("static/data/chinaVis-map/case/province_case_"+currentDateStr+".json?t="+new Date().getTime(),function(error,json){
+    d3.json("static/data/chinaVis-map/case/province_case_"+currentDateStr+".json?t="+new Date().getTime()).then(function(json){
         fillMapColor(json);
         showCaseCircle(json);
         if(provincePageFlag===1){
