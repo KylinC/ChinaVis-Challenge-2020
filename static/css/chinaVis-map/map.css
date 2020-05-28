@@ -1,0 +1,141 @@
+/* china heatmap style */
+
+#china_heatmap_div{
+    height: 100%; /* adaptable */
+    width: 100%;
+    /* background-color: rgba(70,130,180,0.8); */
+    background-color: transparent;
+}
+
+/* 南沙群岛画布 */
+#nansha_heatmap_svg{
+    position: absolute;
+    left: 80%;
+    top: 66%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* 日期选择样式设置 */
+#date_div{
+    position: absolute;
+    top: 500px;
+    height: 30px;
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+.date_arrow{
+    height:30px;
+    width:30px;
+}
+.date_arrow:hover{
+    cursor: pointer;
+}
+#date_left_arrow{
+    transform: rotateZ(-90deg);
+}
+#date_right_arrow{
+    transform: rotateZ(90deg);
+}
+#date_rect_div{
+    height: 30px;
+    width: 80%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    line-height: 30px;
+}
+#date_rect_div::-webkit-scrollbar { width: 0 !important } /*兼容chrome safari*/
+#date_rect_div { -ms-overflow-style: none; } /*兼容IE 10+*/
+#date_rect_div { overflow: -moz-scrollbars-none; } /*兼容火狐*/
+
+.sub_date_rect_div{
+    line-height: 30px;
+    height: 12px;
+    width: 16px;
+    border: 1px solid black;
+    box-sizing: border-box;
+    border-radius: 2px;
+    background-color: white;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    top:9px;
+}
+.sub_date_rect_div:hover{
+    cursor: pointer;
+    background-color: #0e94ea;
+}
+
+
+/* tooltip类 */
+#my_tooltip {
+    position: absolute;
+    left:0;
+    top:0;
+    font-size: 12px;
+}
+#my_tooltip .tooltiptext {
+    visibility: visible;
+    background-color: #0e94ea;
+    min-width: 150px;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 1px 2px 1px 2px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+}
+#my_tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #0e94ea transparent transparent;
+}
+.my_tooltip_hidden{
+    display: none;
+}
+#date_tooltip,#default_tooltip {
+    position: absolute;
+    font-size: 12px;
+    left:0;
+    top:0;
+}
+#date_tooltip .date_tooltiptext,#default_tooltip .default_tooltiptext {
+    visibility: visible;
+    background-color: #0e94ea;
+    min-width: 80px;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -60px;
+}
+#date_tooltip .date_tooltiptext::after,#default_tooltip .default_tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #0e94ea transparent transparent transparent;
+}
+.date_tooltip_hidden,.default_tooltip_hidden{
+    display: none;
+}
+

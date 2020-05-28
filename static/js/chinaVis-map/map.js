@@ -22,9 +22,9 @@ var width=$("#china_heatmap_div").width();
 var height=$("#china_heatmap_div").height();
 var mapCenterPos={x:width/2,y:height/2};
 
-var chinaProjection=d3.geoMercator().center([110,36]).translate([mapCenterPos.x,mapCenterPos.y]).scale(600); // 调整地图中心位置
+var chinaProjection=d3.geoMercator().center([105,32]).translate([mapCenterPos.x,mapCenterPos.y]).scale(500); // 调整地图中心位置
 var chinaPath=d3.geoPath().projection(chinaProjection);
-var nanshaProjection=d3.geoMercator().center([106,23]).scale(400); // 调整地图中心位置
+var nanshaProjection=d3.geoMercator().center([106,23]).scale(200); // 调整地图中心位置
 var nanshaPath=d3.geoPath().projection(nanshaProjection);
 
 var chinaSvg=d3.select("#china_heatmap_div")
@@ -35,8 +35,8 @@ var chinaSvg=d3.select("#china_heatmap_div")
 var nanshaSvg=d3.select("#china_heatmap_div")
         .append("svg")
         .attr("id","nansha_heatmap_svg")
-        .attr("width",120)
-        .attr("height",150);
+        .attr("width",60)
+        .attr("height",75);
 var dateArr=getEachDay('2020/1/10','2020/5/19'); // 2020-1-10至2020-5-19
 var currentDateStr="2-1"; //全局日期
 var caseType=1; // 全局确诊-治愈-死亡类型
@@ -47,14 +47,14 @@ var provincePageFlag=0;
 
 
 /** 部分数据初始化 */
-$("#confirmed_button").css({"background-color":"rgb(189, 222, 235)","color":"rgb(10, 170, 233)"});
+$("#confirmed_button").css({"background-color":"#0e94eb","color":"white"});
 createDateSeletor();
 
 /* 数据异步加载: 异步任务放入队列，加载完成之后在绘制热力图 */
 d3.queue()
-    .defer(d3.json,"http://127.0.0.1:5501/data/china.json?t="+new Date().getTime())
-    .defer(d3.json, "http://127.0.0.1:5501/data/island.json?t="+new Date().getTime())  
-    .defer(d3.json, "http://127.0.0.1:5501/data/nansha.json?t="+new Date().getTime())  
+    .defer(d3.json,"static/data/chinaVis-map/china.json?t="+new Date().getTime())
+    .defer(d3.json, "static/data/chinaVis-map/island.json?t="+new Date().getTime())
+    .defer(d3.json, "static/data/chinaVis-map/nansha.json?t="+new Date().getTime())
     .await(function(error,mainlandJson,islandJson,nanshaJson,caseCsv) {
         if (error) return console.warn(error);
         displayMap(mainlandJson,1);
@@ -161,7 +161,7 @@ function displayMap(json,type){
             .attr("stroke-width",0.5)
             .attr("transform",`translate(-${nanshaProjection([106,23])[0]},-${nanshaProjection([106,23])[1]})`);
     }
-    
+
 }
 /* 设置地图颜色填充 */
 function fillMapColor(json){
@@ -188,7 +188,7 @@ function fillMapColor(json){
             return colorLab3(myScale(deadCount,colorGradient3));
         }
     })
-} 
+}
 
 /** 显示新增源泉 */
 function showCaseCircle(json){
@@ -215,7 +215,7 @@ function showCaseCircle(json){
             return 20*myScale(currentDeadCount,currentColorGradient);
         }
     }).attr("fill",circleColors[caseType-1]);
-} 
+}
 function fillProvinceColor(){
     d3.selectAll(".province_map").attr("fill",function(d,i){
         if(caseType===1){
@@ -231,7 +231,7 @@ function fillProvinceColor(){
 /* 点击后显示当天热力图 */
 function loadCurrentDateCase(){
     console.log("invoke loadCurrentDateCase()!"+new Date().getTime());
-    d3.json("http://127.0.0.1:5501/data/case/province_case_"+currentDateStr+".json?t="+new Date().getTime(),function(error,json){
+    d3.json("static/data/chinaVis-map/case/province_case_"+currentDateStr+".json?t="+new Date().getTime(),function(error,json){
         fillMapColor(json);
         showCaseCircle(json);
         if(provincePageFlag===1){
@@ -252,13 +252,13 @@ function mapLabel(){
         .enter()
         .append("rect")
         .attr("class","map_rect_label")
-        .attr("x",150)
+        .attr("x",50)
         .attr("y",function(d,i){
-            return (height-150)-20*i;
+            return (height-140)-10*i;
         })
         .attr("ry",1)
-        .attr("height",20)
-        .attr("width",60)
+        .attr("height",10)
+        .attr("width",30)
         .attr("fill",function(d){
             if(caseType===1){
                 return colorLab(myScale(d,colorGradient));
@@ -285,13 +285,13 @@ function mapLabel(){
         .enter()
         .append("text")
         .attr("class","map_rect_text")
-        .attr("x",180)
+        .attr("x",65)
         .attr("y",function(d,i){
-            return (height-136)-20*i;
+            return (height-132)-10*i;
         })
         .attr("text-anchor","middle")
         .attr("fill","black")
-        .attr("font-size",10)
+        .attr("font-size",5)
         .text(function(d,i){
             if(i===0) return d;
             else if(i>=1&&i<8){
@@ -311,8 +311,8 @@ function createDateSeletor(){
     }
     showDefaultDateTooltip("#date_2020-"+currentDateStr);
     $(".sub_date_rect_div").mouseover(function(e){
-        let xPosition=$(this).offset().left;
-        let yPosition=$(this).offset().top;
+        let xPosition=this.offsetLeft;
+        let yPosition=this.offsetTop;
         d3.select("#date_tooltip")
             .style("left",(xPosition+28)+"px")
             .style("top",(yPosition-4)+"px");
@@ -324,19 +324,21 @@ function createDateSeletor(){
         d3.select("#date_tooltip").classed("date_tooltip_hidden",true);
     })
     .click(function(){
-        let xPosition=$(this).offset().left;
-        let yPosition=$(this).offset().top;
+        let xPosition=this.offsetLeft;
+        let yPosition=this.offsetTop;
+        console.log([xPosition,yPosition]);
         d3.select("#default_tooltip")
             .style("left",(xPosition+28)+"px")
             .style("top",(yPosition-4)+"px");
         d3.select(".default_tooltiptext")
             .text(this.id.split('_')[1]);
     });
-    $("#date_2020-"+currentDateStr).css("background-color","rgb(10, 170, 233)"); 
+    $("#date_2020-"+currentDateStr).css("background-color","rgb(10, 170, 233)");
 }
 function showDefaultDateTooltip(selector){
-    let xPosition=$(selector).offset().left;
-    let yPosition=$(selector).offset().top;
+    let xPosition=document.querySelector(selector).offsetLeft;
+    let yPosition=document.querySelector(selector).offsetTop;
+    console.log([xPosition,yPosition]);
     d3.select("#default_tooltip")
         .style("left",(xPosition+28)+"px")
         .style("top",(yPosition-4)+"px");

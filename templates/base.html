@@ -8,12 +8,16 @@
     <meta name="description" content="china-vis 2020">
     <meta name="keywords" content="COVID-19, visualization, visual analysis">
     <meta name="authors" content="Qilin Chen, Xuefei Tian, Weiqi Feng, Yi Lu">
+    {#  chinaVis-map  #}
+    <link rel="stylesheet" href="static/css/chinaVis-map/map.css">
+    <script src="static/js/chinaVis-map/jquery-3.4.1.js"></script>
 
     <script type="text/javascript" src="static/js/rem.js"></script>
     <script type="text/javascript" src="static/js/chart3.js"></script>
     <script type="text/javascript" src="static/js/chart4.js"></script>
     <script type="text/javascript" src="static/js/linePlot.js"></script>
-    <script type="text/javascript" src="static/js/d3.min.js"></script>
+
+    <script type="text/javascript" src="static/js/chinaVis-map/d3.js"></script>
     <link rel="stylesheet" href="static/css/style.css">
     <title>中国疫情可视分析</title>
 </head>
@@ -21,4 +25,7 @@
     {% block content %}{% endblock %}
 </body>
 {#<script type="text/javascript" src="{{url_for('static',filename='js/rem.js')}}"></script>#}
+<script type="text/javascript" src="static/js/chinaVis-map/toolfunction.js"></script>
+<script type="text/javascript" src="static/js/chinaVis-map/map.js"></script>
+<script type="text/javascript" src="static/js/chinaVis-map/eventListener.js"></script>
 </html>

@@ -101,42 +101,32 @@ pre {
 
 
 /** 滚动条 **/
-::-webkit-scrollbar {
-    width: 5px;
-    height: 10px;
-}
+/*::-webkit-scrollbar {*/
+/*    width: 5px;*/
+/*    height: 10px;*/
+/*}*/
 
-::-webkit-scrollbar-button:vertical {
-    display: none;
-}
+/*::-webkit-scrollbar-button:vertical {*/
+/*    display: none;*/
+/*}*/
 
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-corner {
-    background-color: rgba(14, 148, 234, 0.2);
-}
+/*::-webkit-scrollbar-track,*/
+/*::-webkit-scrollbar-corner {*/
+/*    background-color: rgba(14, 148, 234, 0.2);*/
+/*}*/
 
-::-webkit-scrollbar-thumb {
-    border-radius: 0;
-    background-color: rgba(0, 0, 0, .3);
-}
+/*::-webkit-scrollbar-thumb {*/
+/*    border-radius: 0;*/
+/*    background-color: rgba(0, 0, 0, .3);*/
+/*}*/
 
-::-webkit-scrollbar-thumb:vertical:hover {
-    background-color: rgba(0, 0, 0, .35);
-}
+/*::-webkit-scrollbar-thumb:vertical:hover {*/
+/*    background-color: rgba(0, 0, 0, .35);*/
+/*}*/
 
-::-webkit-scrollbar-thumb:vertical:active {
-    background-color: rgba(0, 0, 0, .38);
-}
-
-.data-box {
-    width: 4.9rem;
-    position: absolute;
-    margin: auto;
-    top: 0.42rem;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
+/*::-webkit-scrollbar-thumb:vertical:active {*/
+/*    background-color: rgba(0, 0, 0, .38);*/
+/*}*/
 
 .chart-box {
     position: absolute;
@@ -376,6 +366,7 @@ pre {
     width: 100%;
     height: 75.9%;
     position: relative;
+    box-sizing: border-box;
 }
 
 .center-bottom>.city-data {
@@ -517,10 +508,10 @@ pre {
 
 @media screen and (max-height: 610px) {
     .right-top {
-        height: 60%
+        height: 49%
     }
     .right-center {
-        height: 11%;
+        height: 21%;
     }
     .data-box>.data-number {
         height: 1.4rem;
