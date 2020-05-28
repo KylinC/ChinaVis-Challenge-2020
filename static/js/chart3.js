@@ -13,7 +13,7 @@
         fetchCSV();
     }
     function fetchCSV() {
-        d3.csv("static/data/economy.csv").then(function(data){
+        d3.csv("static/data/chart3.csv").then(function(data){
             draw(data);
         });
     }
