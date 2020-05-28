@@ -95,7 +95,7 @@
           };
 
         // Draw the figure
-        let svg = d3.select("#chart4")
+        let svg = d3.select("#chart5")
                   .append("svg")
                   .attr("width", width)
                   .attr("height", height);
