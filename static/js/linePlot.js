@@ -6,16 +6,13 @@ function init() {
 }
 
 function linePlot(province, item) {
-    d3.csv("static/data/case.csv").then(function (data) {
+    d3.csv("static/data/provinceData.csv").then(function (data) {
         let confirmedData = {};
         let curedData = {};
         let deadData = {};
 
-        console.log(data);
-
         // Collect data for each status
         for (let row of data) {
-            console.log(row);
             let cur_province = row.Province;
             let date = row.Date;
 
@@ -220,7 +217,5 @@ function linePlot(province, item) {
                 .style("fill", "#FF9966")
                 .on("mouseover", highlight)
                 .on("mouseleave", doNotHighlight);
-
-            xAxis.domain([xData]);
     });
 }
