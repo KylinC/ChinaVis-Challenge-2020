@@ -98,7 +98,7 @@
                         .attr("fill", color);
                   
                     g.append("text")
-                        .attr("color", "#cdddf7")
+                        .attr("fill", "#cdddf7")
                         .attr("x", -24)
                         .attr("y", 9.5)
                         .attr("dy", "0.35em")
