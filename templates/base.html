@@ -10,6 +10,7 @@
     <meta name="authors" content="Qilin Chen, Xuefei Tian, Weiqi Feng, Yi Lu">
     {#  chinaVis-map  #}
     <link rel="stylesheet" href="static/css/chinaVis-map/map.css">
+    <link rel="stylesheet" href="static/css/chinaVis-map/consensus.css">
     <script src="static/js/chinaVis-map/jquery-3.4.1.js"></script>
 
     <script type="text/javascript" src="static/js/rem.js"></script>
@@ -27,7 +28,8 @@
     {% block content %}{% endblock %}
 </body>
 {#<script type="text/javascript" src="{{url_for('static',filename='js/rem.js')}}"></script>#}
+<script type="text/javascript" src="static/js/updateDateLoc.js"></script>
 <script type="text/javascript" src="static/js/chinaVis-map/toolfunction.js"></script>
 <script type="text/javascript" src="static/js/chinaVis-map/map.js"></script>
-<script type="text/javascript" src="static/js/chinaVis-map/eventListener.js"></script>
+<script type="text/javascript" src="static/js/chinaVis-map/consensusMap.js"></script>
 </html>
