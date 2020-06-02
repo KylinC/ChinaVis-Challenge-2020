@@ -546,3 +546,58 @@ pre {
         overflow-y: auto;
     }
 }
+
+.container {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .7);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    visibility: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.pop-up {
+    width: 70%;
+    height: 80%;
+    background: url(../images/system/popUP_bg.png) top left no-repeat;
+    background-size: 100% 100%;
+    position: absolute;
+    padding: 0.2rem 0.5rem;
+    visibility: hidden;
+}
+
+.pop-up .title {
+    width: 100%;
+    height: 0.9rem;
+    line-height: 0.9rem;
+    font-size: 0.3rem;
+    color: white;
+    padding-left: 0.2rem;
+    background: url(../images/system/title_line.png) center left no-repeat;
+}
+
+.pop-up .pie-chart {
+    width: 76%;
+    height: 80%;
+}
+
+.pop-up .pie-data {
+    width: 80%;
+}
+
+.close-pop {
+    display: inline-block;
+    position: absolute;
+    top: 0.3rem;
+    right: 0.5rem;
+    width: 13px;
+    height: 0.9rem;
+    background: url(../images/system/close.png) center left no-repeat;
+    background-size: 13px 13px;
+    cursor: pointer;
+    z-index: 99;
+}

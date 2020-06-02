@@ -22,7 +22,8 @@
             </div>
             <div class="left-center">
                 <div class="title-box">
-                    <h6>5月15日 Top5 流量新闻知识图谱</h6>
+                    <h6>5月15日 流量新闻知识图谱</h6>
+                    <button id="setBtn"><img src="static/images/system/chart_icon.png" alt="">详细</button>
                     <!--Chart1-->
                 </div>
                 <div class="chart-box" id="KG">
@@ -106,9 +107,26 @@
             </div>
         </div>
     </div>
+    <div class="container">
+        <div class="pop-up">
+            <span class="close-pop"></span>
+            <h2 class="title">流量新闻知识图谱</h2>
+            <div id="addKG" style="height: 90%;width: 100%;"></div>
+        </div>
+    </div>
     <script type="text/javascript" src="static/js/echarts-3.8.5.min.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/paraPoint.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/layoutKG.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/china.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/mappie.js"></script>
+    <script type="text/javascript">
+        $('.close-pop').on('click', function () {
+            $(this).parent().parent().hide().find('.cont-div').attr('style', 'visibility: hidden');
+        })
+
+        $('#setBtn').on('click', function () {
+            $('.container').attr('style', 'visibility: visible').find('.pop-up').attr('style', 'visibility: visible').siblings().attr('style', 'visibility: hidden');
+
+        })
+    </script>
 {% endblock %}
