@@ -1,0 +1,12 @@
+.chinaMap-box{
+    /*border: 1px solid red;*/
+
+}
+#consensus_nansha_svg{
+    position: absolute;
+    left: 80%;
+    top: 66%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0);
+}
