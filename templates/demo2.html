@@ -69,8 +69,15 @@
                         <!-- <li class="active" data-value="3"><input type="input"/>确诊</li> -->
                         <!-- <li data-value="4">治愈</li> -->
                         <!-- <li data-value="5">死亡</li> -->
-                        <input type="input"/>
+                        <!-- <input type="input"/> -->
+                        <li class="active" data-value="3" id="dateBtn">日期</li>
                     </ul>
+                    <div class="time-box" id="timeBox">
+                        <div class="time-div">
+                            <input class="time-input" type="text" value="" id="startTime">
+                            <img src="static/images/system/selsct_time.png" alt="">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="center-bottom" id="china_heatmap_chart">
@@ -111,7 +118,7 @@
         <div class="pop-up">
             <span class="close-pop"></span>
             <h2 class="title">流量新闻知识图谱</h2>
-            <div id="addKG" style="height: 90%;width: 100%;"></div>
+            <div id="addKG" style="height: 85%;width: 100%;"></div>
         </div>
     </div>
     <script type="text/javascript" src="static/js/echarts.js"></script>
@@ -119,6 +126,8 @@
     <script type="text/javascript" src="static/js/demo-temp/layoutKG.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/china.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/mappie.js"></script>
+    <script type="text/javascript" src="static/js/layer/layer.min.js"></script>
+    <script type="text/javascript" src="static/js/layer/laydate/laydate.js"></script>
     <script type="text/javascript" src="static/js/KGadd.js"></script>
     <script type="text/javascript" src="static/js/base.js"></script>
 {% endblock %}

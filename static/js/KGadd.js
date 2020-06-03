@@ -92,7 +92,7 @@ function relationshipGraph(graph) {
                 },
                 force: {
                     repulsion: 100,
-                    friction: 0.06
+                    friction: 0.2
                 }
             }
         ]
