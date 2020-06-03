@@ -114,19 +114,11 @@
             <div id="addKG" style="height: 90%;width: 100%;"></div>
         </div>
     </div>
-    <script type="text/javascript" src="static/js/echarts-3.8.5.min.js"></script>
+    <script type="text/javascript" src="static/js/echarts.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/paraPoint.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/layoutKG.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/china.js"></script>
     <script type="text/javascript" src="static/js/demo-temp/mappie.js"></script>
-    <script type="text/javascript">
-        $('.close-pop').on('click', function () {
-            $(this).parent().parent().hide().find('.cont-div').attr('style', 'visibility: hidden');
-        })
-
-        $('#setBtn').on('click', function () {
-            $('.container').attr('style', 'visibility: visible').find('.pop-up').attr('style', 'visibility: visible').siblings().attr('style', 'visibility: hidden');
-
-        })
-    </script>
+    <script type="text/javascript" src="static/js/KGadd.js"></script>
+    <script type="text/javascript" src="static/js/base.js"></script>
 {% endblock %}

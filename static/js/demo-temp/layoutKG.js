@@ -1,4 +1,4 @@
-const KGChart = echarts.init(document.getElementById("addKG"));
+const KGChart = echarts.init(document.getElementById("KG"));
 
 //跳转代码
 KGChart.on('click', function(params) {
