@@ -1,28 +1,47 @@
+var myChart = echarts.init(document.getElementById('addKG'),'macarons');
+var categories = [{name:"News"},{name:"Mailuo"},{name:"Platform"},{name:"Url"}];
 function relationshipGraph(graph) {
-    var myChart = echarts.init(document.getElementById('addKG'),'macarons');
-    var categories = [];
-    for(i=0;i<graph.catas.length;i++){
-      categories[i]={name:graph.catas[i]}
-    }
+    // var categories = [];
+    // for(i=0;i<graph.catas.length;i++){
+    //   categories[i]={name:graph.catas[i]}
+    // }
+    // console.log(categories);
+
+    graph.edges.forEach(function (edge) {
+        edge.lineStyle = {
+            width:2,
+            color:"#FFFAFA"
+        };
+        edge.type = 'dashed';
+        edge.label={
+            formatter:edge.name,
+            position:'middle',
+            show:true,
+            fontSize:12,
+            fontStyle:'italic',
+            color:"#D3D3D3"
+        };
+        edge.effect = {
+            show:true,
+            period:6,
+            symbolSize: 3,
+            color:"#fff",
+            trailLength: 0.7
+        };
+    });
 
     var option = {
-        title: {
-            text: 'Les Miserables',
-            subtext: 'Default layout',
-            top: 'bottom',
-            left: 'right'
-        },
         tooltip: {
             formatter: function(param){
                 if(param.dataType === 'edge'){
-                    return param.data.relationship;
+                    return param.data.name;
                 }
                 else{
                     if(param.data.name != undefined){
                         return param.data.detail;
                     }
                     else{
-                        return param.data.title
+                        return param.data.title;
                     }
                 }
 
@@ -49,15 +68,6 @@ function relationshipGraph(graph) {
                 return a.name;
             })
         }],
-        label: {//图形上的文本标签，可用于说明图形的一些数据信息
-            normal: {
-                show : true,//显示
-                //回调函数，你期望节点标签上显示什么
-                formatter: function(params){
-                    return params.data.label;
-                },
-            }
-        },
         animation: true,
         series : [
             {
@@ -66,6 +76,8 @@ function relationshipGraph(graph) {
                 layout: 'force',
                 data: graph.nodes,
                 links: graph.edges,
+                edgeSymbol: ['','arrow'],
+                edgeSymbolSize: [0,8],
                 categories: categories,
                 roam: true,
                 draggable: true,
@@ -79,14 +91,19 @@ function relationshipGraph(graph) {
                     }
                 },
                 force: {
-                    repulsion: 100
+                    repulsion: 100,
+                    friction: 0.06
                 }
             }
         ]
     };
     myChart.setOption(option);
-    myChart.on('click', function(params){
-        if(params.dataType == 'node'){
+}
+
+myChart.on('click', function(params){
+    console.log(params);
+    if(params.dataType == 'node'){
+        if(params.data.label == 'Mailuo'){
             $.ajax({
                 type: 'post',
                 url: 'http://127.0.0.1:5000/demo2/click',
@@ -94,20 +111,28 @@ function relationshipGraph(graph) {
                 dataType: "jsonp",
                 contentType: "application/json; charset=utf-8",
                 success: function (res) {
-                    console.log(res);
                     relationshipGraph(res);
                 },
                 error: function (msg) {
                     console.log(msg);
                 }
             });
-            // console.log(params);
         }
-        else{
+        if(params.data.label == 'Url'){
             console.log(params);
+            window.open(params.data.name);
         }
-    })
-}
+        
+        // console.log(params);
+    }
+    else{
+        console.log(params);
+    }
+})
+
+window.onresize = function() {
+    myChart.resize();
+};
 
 function BaseSearch(){
     // var tmp_text = $("#neotext").val()

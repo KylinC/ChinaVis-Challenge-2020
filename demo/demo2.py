@@ -28,8 +28,6 @@ def getdatafromDB():
 
         results = session.run(seaorder).values()
 
-        print(results)
-
         nodeList = []
         edgeList = []
         if(len(results)!=0):
@@ -69,9 +67,11 @@ def click_node():
     click_point_data = data_input[0]
 
     aim_name = "'" + click_point_data["name"] + "'"
-    # print(aim_name)
-    neoorder1 = 'MATCH (p1)-[r1]->(p2:%s{name:%s}) RETURN p1,p2,r1' % (click_point_data["label"], aim_name)
-    neoorder2 = 'MATCH (p1:%s{name:%s})-[r1]->(p2) RETURN p1,p2,r1' % (click_point_data["label"], aim_name)
+    aim_event = "'" + click_point_data["event_id"] + "'"
+    aim_time = "'" + click_point_data["time"] + "'"
+    # print(click_point_data)
+    neoorder1 = 'MATCH (p1)-[r1]->(p2:%s{name:%s,event_id:%s,time:%s}) RETURN p1,p2,r1' % (click_point_data["label"], aim_name,aim_event,aim_time)
+    neoorder2 = 'MATCH (p1:%s{name:%s,event_id:%s,time:%s})-[r1]->(p2) RETURN p1,p2,r1' % (click_point_data["label"], aim_name,aim_event,aim_time)
 
     nodeList = []
     edgeList = []
@@ -112,7 +112,7 @@ def click_node():
         cata = {}
         nodes = []
         for node in nodeList:
-            tmp_node, cata = buildweathernodes_test(node, cata)
+            tmp_node, cata = buildnodes(node, cata)
             nodes.append(tmp_node)
         edges = []
         id_tmp = 0
