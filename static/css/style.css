@@ -609,7 +609,6 @@ pre {
     top: 60%;
     left: 30%;
     overflow: hidden;
-    z-index: 10;
     display: none;
 }
 
