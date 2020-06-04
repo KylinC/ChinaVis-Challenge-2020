@@ -10,3 +10,10 @@
     box-sizing: border-box;
     background-color: rgba(0, 0, 0, 0);
 }
+/* 舆情矩形画布 */
+#consensus_rect_svg{
+    position: absolute;
+    left: 0;
+    top: 70%;
+    /*border: 1px solid green;*/
+}

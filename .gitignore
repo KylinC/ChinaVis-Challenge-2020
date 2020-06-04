@@ -4,3 +4,4 @@
 .vscode
 demo/__pycache__/demo1.cpython-36.pyc
 demo/__pycache__/demo2.cpython-36.pyc
+/static/data/RFJSON/

@@ -16,7 +16,6 @@
     box-sizing: border-box;
     background-color: rgba(0, 0, 0, 0);
 }
-
 /* 日期选择样式设置 */
 #date_div{
     position: absolute;
