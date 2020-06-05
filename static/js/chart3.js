@@ -19,7 +19,7 @@ function chart3Export(name) {
 function draw(data) {
     let height = $("#chart3").height(), width = $("#chart3").width();
     let margin = ({top: 5, right: 10, bottom: 30, left: 40});
-    let label = ["居民消费价格指数", "商品零售价格指数","工业生产者购进价格指数","工业生产者出厂价格指数"];
+    let label = ["居民消费价格指数", "商品零售价格指数","工业生产购进价格指数","工业生产出厂价格指数"];
     let months = ["2020年1月", "2020年2月", "2020年3月", "2020年4月"];
     let monthoffset = [4, 3, 2, 1];
     let city =  "北京市";
