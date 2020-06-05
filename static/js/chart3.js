@@ -81,7 +81,12 @@ function chart3Draw(city) {
               .attr("width", width)
               .attr("height", height);
     
-
+    let tooltip = d3.select("#chart3")
+                  .append("div")
+                  .attr("id", "chart3Tip");
+    let toolTipText = tooltip.append("span")
+                      .attr("class", "chart3TipText");
+                
     let legend = svg => {
                 const g = svg
                     .attr("transform", `translate(${width},0)`)
@@ -124,7 +129,26 @@ function chart3Draw(city) {
                     }
                     return  y(lowY) - y(d.value);
                 })
-                .attr("fill", d => color(d.key));
+                .attr("fill", d => color(d.key))
+                .on("mouseover", function(d) {
+                    let xPos = d3.event.clientX - $("#chart3").offset().left;
+                    let yPos = d3.event.clientY - $("#chart3").offset().top;
+                    d3.select("#chart3Tip")
+                      .style("left", (xPos + 6) + "px")
+                      .style("top", (yPos - 26) + "px");
+                    d3.select(".chart3TipText")
+                      .text(function () {
+                          if (isNaN(d.value)) {
+                              return city + " :NaN";
+                          } else {
+                              return city + " :" + d.value.toString();
+                          }
+                      });
+                    d3.select("#chart3Tip").classed("chart3Tip_hidden", false);
+                })
+                .on("mouseout", function(d) {
+                    d3.select("#chart3Tip").classed("chart3Tip_hidden", true);
+                });
 
     svg.append("g")
         .call(xAxis);
