@@ -106,7 +106,7 @@ myChart.on('click', function(params){
         if(params.data.label == 'Mailuo'){
             $.ajax({
                 type: 'post',
-                url: 'http://127.0.0.1:5000/demo2/click',
+                url: '/demo2/click',
                 data: JSON.stringify([params.data]),
                 dataType: "jsonp",
                 contentType: "application/json; charset=utf-8",
@@ -141,8 +141,8 @@ function BaseSearch(){
     postdata=[keytime,keyword];
 
     $.ajax({
-        type: 'post',
-        url: 'http://127.0.0.1:5000/demo2/KG',
+        type: 'POST',
+        url: '/demo2/KG',
         data: JSON.stringify(postdata),
         dataType: "jsonp",
         contentType: "application/json; charset=utf-8",

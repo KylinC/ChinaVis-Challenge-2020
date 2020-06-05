@@ -19,6 +19,7 @@ def demo2():
 
 @mod2.route("/demo2/KG",methods = ['POST'])
 def getdatafromDB():
+    print("check!")
     data = request.get_data()
     str_input = json.loads(data)
 
