@@ -7,18 +7,19 @@
  * Copyright 2019 Vic   
  */
 var chart3Data;
-function fetchCSV() {
+function chart3FetchCSV() {
     d3.csv("static/data/chart3.csv").then(function(data){
         chart3Data = data;
-        draw("北京");
+        chart3Draw("北京");
     });
 }
 
 function chart3Export(name) {
-    draw(name);
+    console.log("111");
+    chart3Draw(name);
 }
 
-function draw(city) {
+function chart3Draw(city) {
     $("#chart3").empty();
     let height = $("#chart3").height(), width = $("#chart3").width();
     let margin = ({top: 5, right: 10, bottom: 30, left: 40});
@@ -134,8 +135,8 @@ function draw(city) {
 }
 (function() {
     "use strict";
-    window.addEventListener("load", initialize);
-    function initialize() {
-        fetchCSV();
+    window.addEventListener("load", chart3Initialize);
+    function chart3Initialize() {
+        chart3FetchCSV();
     }
 })()
