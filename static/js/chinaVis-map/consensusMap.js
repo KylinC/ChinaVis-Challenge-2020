@@ -16,7 +16,8 @@ $(function () {
     var nanshaProjection=d3.geoMercator().center([106,23]).scale(200); // 调整地图中心位置
     var nanshaPath=d3.geoPath().projection(nanshaProjection);
 
-    var RFCONSENSUS;
+    var RFCONSENSUS; // 存储舆论热度
+    var capitalSet={};
     var date='05-12';
     // 创建svg
     var consensusChart=d3.select(".chinaMap-box")
@@ -40,7 +41,7 @@ $(function () {
     var files = ["static/data/chinaVis-map/china.json?t="+new Date().getTime(),
                 "static/data/chinaVis-map/island.json?t="+new Date().getTime(),
                 "static/data/chinaVis-map/nansha.json?t="+new Date().getTime(),
-                "static/data/RFJSON/RealtimeFlow_All.json?t="+new Date().getTime()];
+                "static/data/RFJSON/RealtimeFlow_cities_All.json?t="+new Date().getTime()];
     var promises=[];
     files.forEach(function (url) {
         promises.push(d3.json(url));
@@ -53,7 +54,18 @@ $(function () {
         fillMap(date);
         addBrush();
 
-        drawRect({});
+        // 默认全国城市的top32数组
+        // 临时数据
+        var rectArr=[{city:"上海",value:2},{city:"湖南",value:3},{city:"北京",value:4},{city:"江西",value:5},
+        {city:"北京",value:22},{city:"云南",value:23},{city:"四川",value:14},{city:"贵州",value:25},
+        {city:"河北",value:22},{city:"湖北",value:13},{city:"西藏",value:14},{city:"黑龙江",value:25},
+        {city:"河北",value:22},{city:"湖北",value:33},{city:"西藏",value:14},{city:"黑龙江",value:25},
+        {city:"河北",value:22},{city:"湖北",value:23},{city:"西藏",value:14},{city:"黑龙江",value:25},
+        {city:"河北",value:22},{city:"湖北",value:13},{city:"西藏",value:14},{city:"黑龙江",value:25},
+        {city:"河北",value:22},{city:"湖北",value:3},{city:"西藏",value:14},{city:"黑龙江",value:25},
+        {city:"河北",value:22},{city:"湖北",value:3},{city:"西藏",value:14},{city:"黑龙江",value:25}];
+
+        drawRect(rectArr);
     });
 
     function displayConsensusMap(json,type,chart) {
@@ -165,31 +177,23 @@ $(function () {
 
     /**
      * 绘制刷选后热力矩形
-     * rectJson: {name:value}
+     * rectArr: {name:value}
      * */
-    function drawRect(rectJson) {
-        // 临时数据
-        rectJson=[{province:"上海",value:2},{province:"湖南",value:3},{province:"北京",value:4},{province:"江西",value:5},
-        {province:"北京",value:22},{province:"云南",value:23},{province:"四川",value:14},{province:"贵州",value:25},
-        {province:"河北",value:22},{province:"湖北",value:13},{province:"西藏",value:14},{province:"黑龙江",value:25},
-        {province:"河北",value:22},{province:"湖北",value:33},{province:"西藏",value:14},{province:"黑龙江",value:25},
-        {province:"河北",value:22},{province:"湖北",value:23},{province:"西藏",value:14},{province:"黑龙江",value:25},
-        {province:"河北",value:22},{province:"湖北",value:13},{province:"西藏",value:14},{province:"黑龙江",value:25},
-        {province:"河北",value:22},{province:"湖北",value:3},{province:"西藏",value:14},{province:"黑龙江",value:25},
-        {province:"河北",value:22},{province:"湖北",value:3},{province:"西藏",value:14},{province:"黑龙江",value:25}];
-
+    function drawRect(rectArr) {
+        $("#consensus_rect_svg").empty();
         rectChart.selectAll("heatRect")
-            .data(rectJson)
+            .data(rectArr)
             .enter()
             .append("rect")
+            .attr("class","heat_rect")
             .attr("x",function (d,i) {
                 return 16*i+10;
             })
             .attr("y",function (d) {
-                return 0.3*height-3*d.value-26;
+                return 0.3*height-2*d.value-26;
             })
             .attr("height",function (d) {
-                return 3*d.value;
+                return 2*d.value;
             })
             .attr("width",function () {
                 return 12;
@@ -199,9 +203,10 @@ $(function () {
             .attr("stroke","white")
             .attr("stroke-width",1);
         rectChart.selectAll("heatRectText")
-            .data(rectJson)
+            .data(rectArr)
             .enter()
             .append("text")
+            .attr("class",".heat_rect_text")
             .attr("x",function (d,i) {
                 return 16*i+10;
             })
@@ -215,7 +220,7 @@ $(function () {
                 return "rotate(60,"+(16*i+10)+","+(0.3*height-18)+")";
             })
             .text(function (d,i) {
-                return d.province;
+                return d.city;
             });
     }
     /**
@@ -252,13 +257,63 @@ $(function () {
     }
 
     function addBrush() {
+        // 获取所有省会的点的位置
+        d3.selectAll(".consensus_map_circle").call(function (sel) {
+            sel.each(function (d,i) {
+                let capitalX,capitalY;
+                if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)||(/澳门/).test(d.properties.name)){
+                    capitalX=chinaProjection(d.properties.cp)[0]+20;
+                } else if((/香港/).test(d.properties.name)){
+                    capitalX=chinaProjection(d.properties.cp)[0]+10;
+                } else if((/甘肃/).test(d.properties.name)){
+                    capitalX=chinaProjection(d.properties.cp)[0]+20;
+                }else{
+                    capitalX=chinaProjection(d.properties.cp)[0];
+                }
+
+                if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)){
+                    capitalY=chinaProjection(d.properties.cp)[1]+30;
+                } else if((/澳门/).test(d.properties.name)||(/香港/).test(d.properties.name)){
+                    capitalY=chinaProjection(d.properties.cp)[1]+10;
+                }else{
+                     capitalY=chinaProjection(d.properties.cp)[1];
+                }
+                capitalSet[d.properties.name]={x:capitalX,y:capitalY}
+            });
+        });
         var myBrush=d3.brush().extent([[0,0],[width,height]])
-                    .on("start end",updateRectChart);
+                    .on("end",updateRectChart);
         consensusChart.append("g").call(myBrush);
         function updateRectChart() {
-            console.log("update rect chart")
-            console.log(d3.event.selection);
+            let selectedProvinces=[];
+            let extend=d3.event.selection;
+            for(let item in capitalSet){
+                if (capitalSet[item].x>extend[0][0]&&capitalSet[item].y>extend[0][1]
+                    &&capitalSet[item].x<extend[1][0]&&capitalSet[item].y<extend[1][1]){
+                    selectedProvinces.push(item);
+                }
+            }
+            // 队选中的省份进行排序城市
+            var currentDateSentimentArr=RFCONSENSUS[date];
+            var citiesRectArr=[];
+            selectedProvinces.forEach(function (item) {
+                var currentProvinceKeys=Object.keys(currentDateSentimentArr[item]);
+                for(let i=4;i<currentProvinceKeys.length;i++){
+                    citiesRectArr.push({city:currentProvinceKeys[i],value:currentDateSentimentArr[item][currentProvinceKeys[i]]['sum']});
+                }
+            });
+            citiesRectArr.sort(function (a,b) {
+                return b.value-a.value;
+            });
+            // top32
+            var citiesRect_top32=[];
+            citiesRectArr.forEach(function (item,i) {
+                if(i<32){
+                    citiesRect_top32.push(item);
+                }
+            });
+            console.log(citiesRect_top32);
+            drawRect(citiesRect_top32);
         }
-
     }
 });

@@ -69,19 +69,6 @@ $(function () {
         loadCurrentDateCase(1); // 初始化
     });
 
-    // d3.queue()
-    //     .defer(d3.json,"static/data/chinaVis-map/china.json?t="+new Date().getTime())
-    //     .defer(d3.json, "static/data/chinaVis-map/island.json?t="+new Date().getTime())
-    //     .defer(d3.json, "static/data/chinaVis-map/nansha.json?t="+new Date().getTime())
-    //     .await(function(error,mainlandJson,islandJson,nanshaJson,caseCsv) {
-    //         if (error) return console.warn(error);
-    //         displayMap(mainlandJson,1);
-    //         displayMap(islandJson,2);
-    //         displayMap(nanshaJson,3);
-    //         mapLabel(1);
-    //         loadCurrentDateCase(1); // 初始化
-    //     });
-
     /* 地图绘制(type:1-mainland,2-island,3-nansha) */
     function displayMap(json,type){
         if(type===1){
@@ -92,7 +79,8 @@ $(function () {
                 .attr("class","china_map heatmap")
                 .attr("d",chinaPath)
                 .attr("stroke","black")
-                .attr("stroke-width",0.5);
+                .attr("stroke-width",0.5)
+                .attr("opacity",0.5);
             chinaSvg.selectAll(".chinaPathCircle") //新增圆: 显示新增病例
                 .data(json.features)
                 .enter()
@@ -119,7 +107,8 @@ $(function () {
                     }
                     return chinaProjection(d.properties.cp)[1];
                 })
-                .attr("opacity",0.8);
+                .attr("opacity",0.8)
+                .attr("r",0);
             chinaSvg.selectAll(".chinaPathText")
                 .data(json.features)
                 .enter()
@@ -211,29 +200,59 @@ $(function () {
 
     /** 显示新增源泉 */
     function showCaseCircle(json){
-        d3.selectAll(".china_map_circle").attr("r",function(d,i){
-            let currentProvinceName=getProvinceAbbr(d.properties.name);
-            let provinceNameArr=Object.keys(json);
-            if(provinceNameArr.indexOf(currentProvinceName)===-1){
-                return 0;
-            }
-            // 默认确诊
-            let currentConfirmedCount=json[currentProvinceName]['新增确诊'];
-            let currentCuredCount=json[currentProvinceName]['新增治愈'];
-            let currentDeadCount=json[currentProvinceName]['新增死亡'];
-            if(caseType===1){
-                currentGlobalMapData[d.properties.name]="新增确诊: "+currentConfirmedCount;
-                return 20*myScale(currentConfirmedCount,currentColorGradient);
-            }
-            else if(caseType===2){
-                currentGlobalMapData[d.properties.name]="新增治愈: "+currentCuredCount;
-                return 20*myScale(currentCuredCount,currentColorGradient);
-            }
-            else{
-                currentGlobalMapData[d.properties.name]="新增死亡: "+currentDeadCount;
-                return 20*myScale(currentDeadCount,currentColorGradient);
-            }
-        }).attr("fill",circleColors[caseType-1]);
+        d3.selectAll(".china_map_circle").call(function(sel){
+            sel.each(function (d,i) {
+                let capitalX,capitalY;
+                if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)||(/澳门/).test(d.properties.name)){
+                    capitalX=chinaProjection(d.properties.cp)[0]+20;
+                } else if((/香港/).test(d.properties.name)){
+                    capitalX=chinaProjection(d.properties.cp)[0]+10;
+                } else if((/甘肃/).test(d.properties.name)){
+                    capitalX=chinaProjection(d.properties.cp)[0]+20;
+                }else{
+                    capitalX=chinaProjection(d.properties.cp)[0];
+                }
+                if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)){
+                    capitalY=chinaProjection(d.properties.cp)[1]+30;
+                } else if((/澳门/).test(d.properties.name)||(/香港/).test(d.properties.name)){
+                    capitalY=chinaProjection(d.properties.cp)[1]+10;
+                }else{
+                     capitalY=chinaProjection(d.properties.cp)[1];
+                }
+                origin={x:capitalX,y:capitalY}; // line chart位置
+
+                let currentProvinceName=getProvinceAbbr(d.properties.name);
+
+                let lineDataArr=[]; // 图形数据
+                json.forEach(function (jsonItem,index) {
+                    let provinceNameArr=Object.keys(jsonItem);
+                    if(provinceNameArr.indexOf(currentProvinceName)===-1){
+                        return 0;
+                    }
+                    // 默认确诊
+                    let currentConfirmedCount=jsonItem[currentProvinceName]['新增确诊'];
+                    let currentCuredCount=jsonItem[currentProvinceName]['新增治愈'];
+                    let currentDeadCount=jsonItem[currentProvinceName]['新增死亡'];
+                    if(caseType===1){
+                        currentGlobalMapData[d.properties.name]="新增确诊: "+currentConfirmedCount;
+                        lineDataArr.push(20*myScale(currentConfirmedCount,currentColorGradient));
+                    }
+                    else if(caseType===2){
+                        currentGlobalMapData[d.properties.name]="新增治愈: "+currentCuredCount;
+                        lineDataArr.push(20*myScale(currentCuredCount,currentColorGradient));
+                    }
+                    else{
+                        currentGlobalMapData[d.properties.name]="新增死亡: "+currentDeadCount;
+                        lineDataArr.push(20*myScale(currentDeadCount,currentColorGradient));
+                    }
+
+                });
+                // 会绘制line chart图形
+                let gChart=chinaSvg.append("g");
+                drawLineChart(lineDataArr,origin,gChart);
+            });
+
+        });
     }
     function fillProvinceColor(){
         d3.selectAll(".province_map").attr("fill",function(d,i){
@@ -249,10 +268,19 @@ $(function () {
     }
     /* 点击后显示当天热力图 */
     function loadCurrentDateCase(){
-        console.log("invoke loadCurrentDateCase()!"+new Date().getTime());
-        d3.json("static/data/chinaVis-map/case/province_case_"+currentDateStr+".json?t="+new Date().getTime()).then(function(json){
-            fillMapColor(json);
-            showCaseCircle(json);
+        var currentFiles=[];
+        var preWeekArr=getPreWeekDate('2020-'+currentDateStr,7);
+        preWeekArr.forEach(function (item,index) {
+            currentFiles.push("static/data/chinaVis-map/case/province_case_"+item+".json?t="+new Date().getTime());
+        });
+        promises = [];
+        currentFiles.forEach(function(url) {
+            promises.push(d3.json(url))
+        });
+        console.log(currentFiles);
+        Promise.all(promises).then(function(values) {
+            fillMapColor(values[0]);
+            showCaseCircle(values);
             if(provincePageFlag===1){
                 $(".province_map").fadeOut("slow");
                 $(".province_map_text").fadeOut("slow");
@@ -261,7 +289,7 @@ $(function () {
                 $(".china_map_text").fadeIn("slow");
                 $(".china_map_circle").fadeIn("slow");
             }
-        })
+        });
     }
 
     /** 绘制标签 */
