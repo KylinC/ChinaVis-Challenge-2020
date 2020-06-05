@@ -98,6 +98,12 @@ function chart4Draw(city) {
               .append("svg")
               .attr("width", width)
               .attr("height", height);
+    let tooltip = d3.select("#chart4")
+              .append("div")
+              .attr("id", "chart4Tip");
+    let toolTipText = tooltip.append("span")
+                  .attr("class", "chart4TipText");
+
     svg.append("g")
         .call(xAxis);
 
@@ -113,10 +119,27 @@ function chart4Draw(city) {
     serie.append("path")
         .attr("fill", "none")
         .attr("stroke", d => z(d[0].key))
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 2.5)
+        .on("mouseover", function(d) {
+            console.log(d[0].key);
+            let xPos = d3.event.clientX - $("#chart4").offset().left;
+            let yPos = d3.event.clientY - $("#chart4").offset().top;
+            d3.select("#chart4Tip")
+              .style("left", (xPos + 6) + "px")
+              .style("top", (yPos - 26) + "px");
+            d3.select(".chart4TipText")
+              .text(function () {
+                      return city + " :" + d[0].key;
+              });
+            d3.select("#chart4Tip").classed("chart4Tip_hidden", false);
+        })
+        .on("mouseout", function(d) {
+            d3.select("#chart4Tip").classed("chart4Tip_hidden", true);
+        })
         .attr("d", d3.line()
             .x(d => x(d.date) + diffX)
-            .y(d => y(d.value)));
+            .y(d => y(d.value)))
+        ;
 
     serie.append("g")
             .attr("font-family", "sans-serif")
@@ -132,7 +155,7 @@ function chart4Draw(city) {
             .attr("x", d => x(d.date) + diffX)
             .attr("y", d => y(d.value))
             .attr("fill", "white")
-          .clone(true).lower()
+            .clone(true).lower()
             .attr("fill", "none")
             .attr("stroke", "#795548")
             .attr("stroke-width", 5);
