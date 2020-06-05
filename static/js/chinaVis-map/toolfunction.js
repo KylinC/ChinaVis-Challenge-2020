@@ -45,6 +45,19 @@ function getEachDay(startDate,endDate){
     return eachDayArr;
 }
 
+/** 获取当前日期前n天的日期*/
+function  getPreWeekDate(curDate,pre_n) {
+    var preDateArr=[];
+    var currentDate=new Date(curDate);
+    var currentSecond=currentDate.getTime();
+    for(let i=currentSecond;i>currentSecond-pre_n*dayStep;i-=dayStep){
+        let tempDate=new Date(i);
+        let dateStr=(tempDate.getMonth() + 1) + '-' + tempDate.getDate();
+        preDateArr.push(dateStr);
+    }
+    return preDateArr;
+}
+
 /** 获取省份简称 */
 function getProvinceAbbr(provinceName){
     if((/黑龙/).test(provinceName)||(/内蒙/).test(provinceName)){
@@ -53,4 +66,38 @@ function getProvinceAbbr(provinceName){
         provinceName=provinceName.slice(0,2);
     }
     return provinceName;
+}
+
+/** 绘制折线点图*/
+function drawLineChart(lineArr,origin,gChart){
+    var line=d3.line()
+    .x(function(d,i){
+        return 3*i+origin.x+1;
+    })
+    .y(function(d,i){
+        return origin.y-d-1;
+    });
+    gChart.append("path")
+    .attr("stroke","#99ffcc")
+    .attr("stroke-width",2)
+    .attr("fill","none")
+    .attr("d",line(lineArr));
+
+    gChart.append("line")
+    .attr("x1",origin.x)
+    .attr("y1",origin.y-24)
+    .attr("x2",origin.x)
+    .attr("y2",origin.y)
+    .attr("stroke","white")
+    .attr("stroke-width",1)
+    .attr("fill","none");
+
+    gChart.append("line")
+    .attr("x1",origin.x+24)
+    .attr("y1",origin.y)
+    .attr("x2",origin.x)
+    .attr("y2",origin.y)
+    .attr("stroke","white")
+    .attr("stroke-width",1)
+    .attr("fill","none");
 }
