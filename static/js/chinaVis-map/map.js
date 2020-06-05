@@ -410,7 +410,7 @@ $(function () {
                 $("#date_2020-"+currentDateStr).css("background-color","rgb(10, 170, 233)");
                 loadCurrentDateCase();
             }
-        }
+        };
         /** 地图省份监听: 点击某省展示相应内部病例信息 */
         d3.selectAll(".china_map")
             .on("mouseover",function(d,i){
@@ -463,7 +463,7 @@ $(function () {
                             }
                         }
                     }
-                    caseJson=caseJson[provinceName]
+                    caseJson=caseJson[provinceName];
                     let cityNameArr=Object.keys(caseJson);
                     if((/新疆/).test(d.properties.name)||(/西藏/).test(d.properties.name)||(/内蒙古/).test(d.properties.name)||(/黑龙江/).test(d.properties.name)){
                         chinaProjection.center([d.properties.cp[0]+2,d.properties.cp[1]]).scale(1500); //重新绘制比例尺

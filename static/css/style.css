@@ -601,3 +601,48 @@ pre {
     cursor: pointer;
     z-index: 99;
 }
+
+.time-box {
+    width: 3.9rem;
+    height: 0.4rem;
+    position: absolute;
+    top: 60%;
+    left: 30%;
+    overflow: hidden;
+    display: none;
+}
+
+.time-div {
+    float: left;
+    width: 1.8rem;
+    height: 0.4rem;
+    position: relative;
+}
+
+.time-div.end {
+    float: right;
+}
+
+.time-div>img {
+    width: 0.2rem;
+    height: 0.2rem;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0.1rem;
+}
+
+.time-input {
+    width: 1.8rem;
+    height: 0.4rem;
+    box-sizing: border-box;
+    border: 1px solid #0E94EA;
+    font-size: 0.16rem;
+    background: rgba(14, 148, 234, 0.2);
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #cdddf7;
+    padding-left: 10px;
+}

@@ -32,7 +32,7 @@ def intellNodes(nodeRecord, cata):
     data["detail"] = str(nodeRecord._properties)
     return data, cata
 
-def buildweathernodes_test(nodeRecord, cata):
+def buildnodes(nodeRecord, cata):
     if (len(nodeRecord._labels) != 0):
         data = {"id": nodeRecord._id, "label": list(nodeRecord._labels)[0], "symbolSize": 20}
         if (data['label'] in cata.keys()):
