@@ -115,6 +115,7 @@ function chart4Draw(city) {
         .selectAll("g")
         .data(series)
         .join("g");
+    let delay = 1000;
     // Append data
     serie.append("path")
         .attr("fill", "none")
@@ -131,10 +132,10 @@ function chart4Draw(city) {
               .text(function () {
                       return city + " :" + d[0].key;
               });
-            d3.select("#chart4Tip").classed("chart4Tip_hidden", false);
+            d3.select("#chart4Tip").classed("chart4Tip_hidden", false).transition().delay(delay);
         })
         .on("mouseout", function(d) {
-            d3.select("#chart4Tip").classed("chart4Tip_hidden", true);
+            d3.select("#chart4Tip").classed("chart4Tip_hidden", true).transition().delay(delay);
         })
         .attr("d", d3.line()
             .x(d => x(d.date) + diffX)
