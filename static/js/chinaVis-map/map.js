@@ -474,8 +474,6 @@ $(function () {
                         let currentProvinceName=getProvinceAbbr(d.properties.name);
                         return currentProvinceName+" "+globalMapData[d.properties.name];
                     });
-                chart3Export(getProvinceAbbr(d.properties.name));
-                chart4Export(getProvinceAbbr(d.properties.name));
                 d3.select("#my_tooltip").classed("my_tooltip_hidden",false);
             })
             .on("mouseout",function(d,i){
@@ -494,6 +492,10 @@ $(function () {
         });
 
         function displayProvince(d,i){
+            // Invoke chart3 function
+            chart3Export(getProvinceAbbr(d.properties.name));
+            chart4Export(getProvinceAbbr(d.properties.name));
+
             $("#province_heatmap_svg").empty();
             provincePageFlag=1;
             // $(".china_map").animate({opacity:0.2},"slow");
