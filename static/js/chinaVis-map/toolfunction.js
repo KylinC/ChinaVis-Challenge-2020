@@ -69,7 +69,7 @@ function getProvinceAbbr(provinceName){
 }
 
 /** 绘制折线点图*/
-function drawLineChart(lineArr,origin,gChart){
+function drawLineChart(lineArr,origin,gChart,color){
     var line=d3.line()
     .x(function(d,i){
         return 3*i+origin.x+1;
@@ -78,14 +78,14 @@ function drawLineChart(lineArr,origin,gChart){
         return origin.y-d-1;
     });
     gChart.append("path")
-    .attr("stroke","#99ffcc")
+    .attr("stroke",color)
     .attr("stroke-width",2)
     .attr("fill","none")
     .attr("d",line(lineArr));
 
     gChart.append("line")
     .attr("x1",origin.x)
-    .attr("y1",origin.y-24)
+    .attr("y1",origin.y-21)
     .attr("x2",origin.x)
     .attr("y2",origin.y)
     .attr("stroke","white")
@@ -93,7 +93,7 @@ function drawLineChart(lineArr,origin,gChart){
     .attr("fill","none");
 
     gChart.append("line")
-    .attr("x1",origin.x+24)
+    .attr("x1",origin.x+21)
     .attr("y1",origin.y)
     .attr("x2",origin.x)
     .attr("y2",origin.y)

@@ -1,6 +1,8 @@
 /**
  * China heatmap based on public voice.
  * Date: 5-31
+ * Author: Snowfly
+ * Copyright ChinaVis 2020
  * */
 "use strict";
 
