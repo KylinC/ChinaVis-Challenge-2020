@@ -1,0 +1,33 @@
+/* tooltip类 */
+#chart3Tip {
+    position: absolute;
+    left:0;
+    top:0;
+    font-size: 12px;
+}
+#chart3Tip .chart3TipText {
+    visibility: visible;
+    background-color: #0e94ea;
+    min-width: 100px;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 1px 2px 1px 2px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+}
+#chart3Tip .chart3TipText::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #0e94ea transparent transparent;
+}
+.chart3Tip_hidden{
+    display: none;
+}

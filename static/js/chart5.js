@@ -18,7 +18,7 @@
         });
     }
     function draw(data) {
-        let city =  "北京";
+        let city =  "北京市";
         let extractData = [];
         for (let i = 0; i < data.length; i++) {
             if (data[i]["城市"] == city) {
@@ -27,7 +27,7 @@
         }
         // Build series
         let series = [];
-        let keys = [];
+        let keys = ["亏损企业增减", "存货增加比例", "负债增加", "产生品增减"];
         for (let i = 0; i < extractData.length; i++) {
             let single = [];
             for (let j = data.columns.length - 2; j >= 1; j--) {
@@ -36,15 +36,14 @@
                              date: month,
                              value: parseFloat(extractData[i][month])});
             }
-            keys.push(extractData[i]["指标"]);
             series.push(single);
         }
 
-        let height = 260, width = 500;
+        let height = $("#chart5").height(), width = $("#chart5").width();
         let margin = ({top: 30, right: 50, bottom: 20, left: 30});
         let labelPadding = 3;
         let y = d3.scaleLinear()
-        .domain([0, d3.max(series, s => d3.max(s, d => d.value))])
+        .domain([d3.min(series, s => d3.min(s, d => d.value)), d3.max(series, s => d3.max(s, d => d.value))])
         .range([height - margin.bottom, margin.top]);
 
         let x = d3.scaleBand()
