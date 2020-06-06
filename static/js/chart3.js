@@ -6,26 +6,30 @@
  * Date:   May 28, 2020
  * Copyright 2019 Vic   
  */
-function fetchCSV() {
+var chart3Data;
+function chart3FetchCSV() {
     d3.csv("static/data/chart3.csv").then(function(data){
-        draw(data);
+        chart3Data = data;
+        chart3Draw("北京");
     });
 }
 
 function chart3Export(name) {
-    console.log("Now hello!\n");
+    console.log("111");
+    chart3Draw(name);
 }
 
-function draw(data) {
+function chart3Draw(city) {
+    $("#chart3").empty();
     let height = $("#chart3").height(), width = $("#chart3").width();
     let margin = ({top: 5, right: 10, bottom: 30, left: 40});
-    let label = ["居民消费价格指数", "商品零售价格指数","工业生产者购进价格指数","工业生产者出厂价格指数"];
+    let label = ["居民消费价格指数", "商品零售价格指数","工业生产购进价格指数","工业生产出厂价格指数"];
     let months = ["2020年1月", "2020年2月", "2020年3月", "2020年4月"];
     let monthoffset = [4, 3, 2, 1];
-    let city =  "北京市";
     let extractData = [];
+    let data = chart3Data;
     for (let i = 0; i < data.length; i++) {
-        if (data[i]["城市"] == city) {
+        if (data[i]["城市"].includes(city)) {
             extractData.push(data[i]);
         }
     }
@@ -40,7 +44,6 @@ function draw(data) {
         finalData.push(singleData);
     }
     let groupKey = "month";
-    console.log(groupKey);
 
     let yAxis = g => g
     .attr("transform", `translate(${margin.left},0)`)
@@ -60,9 +63,9 @@ function draw(data) {
     .call(g => g.select(".domain").remove());
 
     let color = d3.scaleOrdinal().range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-    let start = 96;
+    let lowY = d3.min(finalData, d => d3.min(label, key => d[key])) - 5.0;
     let y = d3.scaleLinear()
-    .domain([start, d3.max(finalData, d => d3.max(label, key => d[key]))]).nice()
+    .domain([lowY, d3.max(finalData, d => d3.max(label, key => d[key]))]).nice()
     .rangeRound([height - margin.bottom, margin.top]);
 
     let x0 = d3.scaleBand()
@@ -78,7 +81,12 @@ function draw(data) {
               .attr("width", width)
               .attr("height", height);
     
-
+    let tooltip = d3.select("#chart3")
+                  .append("div")
+                  .attr("id", "chart3Tip");
+    let toolTipText = tooltip.append("span")
+                      .attr("class", "chart3TipText");
+                
     let legend = svg => {
                 const g = svg
                     .attr("transform", `translate(${width},0)`)
@@ -115,8 +123,32 @@ function draw(data) {
                 .attr("x", d => x1(d.key))
                 .attr("y", d => y(d.value))
                 .attr("width", x1.bandwidth())
-                .attr("height", d => y(start) - y(d.value))
-                .attr("fill", d => color(d.key));
+                .attr("height", function (d) {
+                    if (isNaN(d.value)) {
+                        return 0;
+                    }
+                    return  y(lowY) - y(d.value);
+                })
+                .attr("fill", d => color(d.key))
+                .on("mouseover", function(d) {
+                    let xPos = d3.event.clientX - $("#chart3").offset().left;
+                    let yPos = d3.event.clientY - $("#chart3").offset().top;
+                    d3.select("#chart3Tip")
+                      .style("left", (xPos + 6) + "px")
+                      .style("top", (yPos - 26) + "px");
+                    d3.select(".chart3TipText")
+                      .text(function () {
+                          if (isNaN(d.value)) {
+                              return city + " :NaN";
+                          } else {
+                              return city + " :" + d.value.toString();
+                          }
+                      });
+                    d3.select("#chart3Tip").classed("chart3Tip_hidden", false);
+                })
+                .on("mouseout", function(d) {
+                    d3.select("#chart3Tip").classed("chart3Tip_hidden", true);
+                });
 
     svg.append("g")
         .call(xAxis);
@@ -127,8 +159,8 @@ function draw(data) {
 }
 (function() {
     "use strict";
-    window.addEventListener("load", initialize);
-    function initialize() {
-        fetchCSV();
+    window.addEventListener("load", chart3Initialize);
+    function chart3Initialize() {
+        chart3FetchCSV();
     }
 })()

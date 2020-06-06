@@ -416,6 +416,19 @@ pre {
     top: 1rem;
 }
 
+.right-top2 {
+    width: 100%;
+    height: 45%;
+    box-sizing: border-box;
+    padding-top: 0.2rem;
+    position: relative;
+}
+
+.right-top2>.data-box,
+.right-top2>.chart-box {
+    top: 1rem;
+}
+
 
 .right-center {
     width: 100%;
@@ -426,6 +439,12 @@ pre {
 .right-bottom {
     width: 100%;
     height: 33%;
+    position: relative;
+}
+
+.right-bottom2 {
+    width: 100%;
+    height: 50%;
     position: relative;
 }
 
