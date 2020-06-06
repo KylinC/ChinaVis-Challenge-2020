@@ -13,7 +13,7 @@ $('#close-pop2').on('click', function () {
 
 $('#setBtn2').on('click', function () {
     $('.container').attr('style', 'visibility: visible').find('#pop-up2').attr('style', 'visibility: visible').siblings().attr('style', 'visibility: hidden');
-    BaseSearch();
+    // BaseSearch();
 })
 
 $('#dateBtn').on('click', function () {
@@ -83,3 +83,6 @@ function dateCss() {
 
 // 初始化渲染
 paraPoint("25");
+whatariver();
+emotion();
+source();
