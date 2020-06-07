@@ -24,8 +24,8 @@ def not_found(error):
 
 from demo import demo1
 app.register_blueprint(demo1.mod1)
-# from demo import demo2
-# app.register_blueprint(demo2.mod2)
+from demo import demo2
+app.register_blueprint(demo2.mod2)
 
 if __name__ == "__main__":
     app.run(debug = True)
