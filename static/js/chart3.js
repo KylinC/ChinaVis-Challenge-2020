@@ -39,17 +39,16 @@ function chart3Draw(city, first) {
     }
 
     let height = $("#chart3").height(), width = $("#chart3").width();
-    let margin = ({top: 30, right: 50, bottom: 20, left: 30});
+    let margin = ({top: 10, right: 50, bottom: 20, left: 30});
     let labelPadding = 3;
     let diff = d3.max(series, s => d3.max(s, d => d.value)) - d3.min(series, s => d3.min(s, d => d.value));
     let y = d3.scaleLinear()
     .domain([d3.min(series, s => d3.min(s, d => d.value)) - 0.1 * diff, d3.max(series, s => d3.max(s, d => d.value)) + 0.1 * diff])
     .range([height - margin.bottom, margin.top]);
 
-    let x = d3.scaleBand()
+    let x = d3.scaleOrdinal()
     .domain(["2020年1月", "2020年2月", "2020年3月", "2020年4月"])
-    .rangeRound([margin.left, width - margin.right]);
-
+    .range([margin.left, (width - margin.right + 2 * margin.left) / 3, (2 * width - 2 * margin.right +  margin.left) / 3, width - margin.right]);
     let xAxis = g => g
     .attr("color", "#cdddf7")
     .attr("transform", `translate(0,${height - margin.bottom})`)
@@ -77,7 +76,7 @@ function chart3Draw(city, first) {
           .selectAll("g")
           .data(keys)
           .join("g")
-            .attr("transform", (d, i) => `translate(0,${i * 20})`);
+            .attr("transform", (d, i) => `translate(0,${i * 15})`);
         g.append("rect")
             .attr("x", 0)
             .attr("width", 25)
@@ -124,19 +123,21 @@ function chart3Draw(city, first) {
         path = serie.append("path");
         pathText = serie.append("g")
                         .attr("class", "pathText");
+        pathText1 = serie.append("g")
+                        .attr("class", "pathText1");
     } else {
         svg = d3.select("#chart3 > svg");
         tooltip = d3.select("#chart3 > div");
         serie = svg.select("#chart3Main")
-                .selectAll("g:not(.pathText)")
+                .selectAll("g:not(.pathText):not(.pathText1)")
                 .data(series)
                 .join("g");
         path = serie.select("path");
         pathText = serie.select(".pathText");
+        pathText1 = serie.select(".pathText1");
     }
 
 
-    let diffX = 48.5;
     // Create series
     let delay = 2000;
 
@@ -164,12 +165,37 @@ function chart3Draw(city, first) {
         .ease(d3.easeBounceOut)
         .duration(delay)
         .attr("d", d3.line()
-            .x(d => x(d.date) + diffX)
+            .x(d => x(d.date))
             .y(d => y(d.value)))
         ;
 
-
         pathText
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .attr("stroke-linecap", "round")
+        .attr("stroke-linejoin", "round")
+        .attr("text-anchor", "middle")
+      .selectAll("text")
+      .data(d => d)
+      .join("text")
+        .text(d => d.value)
+        .attr("dy", "0.35em")
+        .transition()
+        .ease(d3.easeBounceOut)
+        .duration(function() {
+            if (first) {
+                return 0;
+            } else {
+                return delay;
+            }
+        })
+        .attr("x", d => x(d.date))
+        .attr("y", d => y(d.value))
+        .attr("fill", "none")
+        .attr("stroke", "#824113")
+        .attr("stroke-width", 6);
+        
+        pathText1
             .attr("font-family", "sans-serif")
             .attr("font-size", 10)
             .attr("stroke-linecap", "round")
@@ -192,7 +218,7 @@ function chart3Draw(city, first) {
                     return delay;
                 }
             })
-            .attr("x", d => x(d.date) + diffX)
+            .attr("x", d => x(d.date))
             .attr("y", d => y(d.value));
 }
 (function() {

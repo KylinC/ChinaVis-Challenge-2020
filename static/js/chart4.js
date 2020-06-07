@@ -187,12 +187,12 @@ function chart4Draw(city, first) {
             .data(color.domain().slice().reverse())
             // .data([1, 2, 3, 4])
             .join("g")
-            .attr("transform", (d, i) => `translate(0,${i * 20})`);
+            .attr("transform", (d, i) => `translate(0,${i * 15})`);
 
         g.append("rect")
             .attr("x", -19)
             .attr("width", 19)
-            .attr("height", 19)
+            .attr("height", 14)
             .attr("fill", color);
       
         g.append("text")

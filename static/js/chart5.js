@@ -39,21 +39,23 @@ function chart5Draw(city, first) {
     }
 
     let height = $("#chart5").height(), width = $("#chart5").width();
-    let margin = ({top: 30, right: 50, bottom: 20, left: 40});
+    let margin = ({top: 30, right: 30, bottom: 20, left: 20});
     let labelPadding = 3;
     let diff = d3.max(series, s => d3.max(s, d => d.value)) - d3.min(series, s => d3.min(s, d => d.value));
     let y = d3.scaleLinear()
     .domain([d3.min(series, s => d3.min(s, d => d.value)) - 0.1 * diff, d3.max(series, s => d3.max(s, d => d.value)) + 0.1 * diff])
     .range([height - margin.bottom, margin.top]);
 
-    let x = d3.scaleBand()
-    .domain(["2020年2月", "2020年3月", "2020年4月"])
-    .rangeRound([margin.left, width - margin.right]);
 
+    let x = d3.scaleOrdinal()
+    .domain(["2020年2月", "2020年3月", "2020年4月"])
+    .range([margin.left, (width - margin.right + margin.left) / 2, width - margin.right]);
+    console.log(width - margin.right)
+    console.log(x("2020年4月"))
     let xAxis = g => g
     .attr("color", "#cdddf7")
     .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0)) 
+    .call(d3.axisBottom(x).ticks((width) / 80).tickSizeOuter(0)) 
     let z = function(key) {
         if (key == keys[0]) {
             return "#6b486b";
@@ -118,25 +120,29 @@ function chart5Draw(city, first) {
 
         serie = svg.append("g")
             .attr("id", "chart5Main")
+            .attr("width", width)
+            .attr("height", height)
             .selectAll("g")
             .data(series)
             .join("g");
         path = serie.append("path");
         pathText = serie.append("g")
                         .attr("class", "pathText");
+        pathText1 = serie.append("g")
+                       .attr("class", "pathText1");
     } else {
         svg = d3.select("#chart5 > svg");
         tooltip = d3.select("#chart5 > div");
         serie = svg.select("#chart5Main")
-                .selectAll("g:not(.pathText)")
+                .selectAll("g:not(.pathText):not(.pathText1)")
                 .data(series)
                 .join("g");
         path = serie.select("path");
         pathText = serie.select(".pathText");
+        pathText1 = serie.select(".pathText1");
     }
 
 
-    let diffX = 48.5;
     // Create series
     let delay = 2000;
 
@@ -164,7 +170,7 @@ function chart5Draw(city, first) {
         .ease(d3.easeBounceOut)
         .duration(delay)
         .attr("d", d3.line()
-            .x(d => x(d.date) + diffX)
+            .x(d => x(d.date))
             .y(d => y(d.value)))
         ;
 
@@ -180,9 +186,6 @@ function chart5Draw(city, first) {
           .join("text")
             .text(d => d.value)
             .attr("dy", "0.35em")
-            .attr("fill", "white")
-            .attr("border-style", "dotted")
-            .attr("border-color", "white")
             .transition()
             .ease(d3.easeBounceOut)
             .duration(function() {
@@ -192,8 +195,60 @@ function chart5Draw(city, first) {
                     return delay;
                 }
             })
-            .attr("x", d => x(d.date) + diffX)
-            .attr("y", d => y(d.value));
+            .attr("x", d => x(d.date))
+            .attr("y", d => y(d.value))
+            .attr("fill", "none")
+            .attr("stroke", "#824113")
+            .attr("stroke-width", 6);
+
+        pathText1
+            .attr("font-family", "sans-serif")
+            .attr("font-size", 10)
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("text-anchor", "middle")
+          .selectAll("text")
+          .data(d => d)
+          .join("text")
+            .text(d => d.value)
+            .attr("dy", "0.35em")
+            .attr("fill", "white")
+            .transition()
+            .ease(d3.easeBounceOut)
+            .duration(function() {
+                if (first) {
+                    return 0;
+                } else {
+                    return delay;
+                }
+            })
+            .attr("x", d => x(d.date))
+            .attr("y", d => y(d.value))
+
+        // pathText
+        //     .attr("font-family", "sans-serif")
+        //     .attr("font-size", 10)
+        //     .attr("stroke-linecap", "round")
+        //     .attr("stroke-linejoin", "round")
+        //     .attr("text-anchor", "middle")
+        //   .selectAll("text")
+        //   .data(d => d)
+        //   .join("text")
+        //     .text(d => d.value)
+        //     .attr("dy", "0.35em")
+        //     .attr("fill", "white")
+        //     .transition()
+        //     .ease(d3.easeBounceOut)
+        //     .duration(function() {
+        //         if (first) {
+        //             return 0;
+        //         } else {
+        //             return delay;
+        //         }
+        //     })
+        //     .attr("x", d => x(d.date))
+        //     .attr("y", d => y(d.value));
+        
 }
 (function() {
     "use strict";
