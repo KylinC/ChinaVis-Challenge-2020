@@ -7,195 +7,206 @@
  * Copyright 2019 Vic   
  */
 var chart4Data;
-function chart4Export(name) {
-    chart4Draw(name, false);
-}
 function chart4FetchCSV() {
     d3.csv("static/data/chart4.csv").then(function(data){
         chart4Data = data;
-        chart4Draw("湖北", true);
+        chart4Draw("武汉", true);
     });
 }
+
+function chart4Export(name) {
+    chart4Draw(name, false);
+}
+
 function chart4Draw(city, first) {
-    console.log(city);
-    let data = chart4Data;
+    // $("#chart4").empty();
+    let height = $("#chart4").height(), width = $("#chart4").width();
+    let margin = ({top: 5, right: 10, bottom: 30, left: 40});
+    let label = ["居民消费价格指数", "商品零售价格指数","工业生产购进价格指数","工业生产出厂价格指数"];
+    let months = ["2020年1月", "2020年2月", "2020年3月", "2020年4月"];
+    let monthoffset = [4, 3, 2, 1];
     let extractData = [];
+    let data = chart4Data;
     for (let i = 0; i < data.length; i++) {
         if (data[i]["城市"].includes(city)) {
             extractData.push(data[i]);
         }
     }
-    // Build series
-    let series = [];
-    let keys = ["亏损企业增减", "存货增加比例", "负债增加", "产生品增减"];
-    for (let i = 0; i < extractData.length; i++) {
-        let single = [];
-        for (let j = data.columns.length - 2; j >= 1; j--) {
-            let month = data.columns[j];
-            single.push({key: extractData[i]["指标"],
-                         date: month,
-                         value: parseFloat(extractData[i][month])});
+    let finalData = [];
+    for (let i = 0; i < months.length; i++) {
+        let singleData = {};
+        singleData["month"] = months[i];
+        // Get column offset
+        for (let j = 0; j < extractData.length; j++) {
+            singleData[extractData[j]["指标"]] = parseFloat(extractData[j][months[i]]);
         }
-        series.push(single);
+        finalData.push(singleData);
     }
+    let groupKey = "month";
 
-    let height = $("#chart4").height(), width = $("#chart4").width();
-    let margin = ({top: 30, right: 50, bottom: 20, left: 30});
-    let labelPadding = 3;
-    let y = d3.scaleLinear()
-    .domain([d3.min(series, s => d3.min(s, d => d.value)), d3.max(series, s => d3.max(s, d => d.value))])
-    .range([height - margin.bottom, margin.top]);
-
-    let x = d3.scaleBand()
-    .domain(["2020年1月", "2020年2月", "2020年3月", "2020年4月"])
-    .rangeRound([margin.left, width - margin.right]);
+    let yAxis = g => g
+    .attr("transform", `translate(${margin.left},0)`)
+    .attr("color", "#cdddf7")
+    .call(d3.axisLeft(y).ticks(null, "s"))
+    .call(g => g.select(".domain").remove())
+    .call(g => g.select(".tick:last-of-type text").clone()
+    .attr("x", 3)
+    .attr("text-anchor", "start")
+    .attr("font-weight", "bold")
+    .text("上年同月=100"));
 
     let xAxis = g => g
-    .attr("color", "#cdddf7")
     .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0)) 
-    let z = function(key) {
-        if (key == keys[0]) {
-            return "#6b486b";
+    .attr("color", "#cdddf7")
+    .call(d3.axisBottom(x0).tickSizeOuter(0))
+    .call(g => g.select(".domain").remove());
+
+    let color = d3.scaleOrdinal().range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    let getVal = function(data) {
+        if (isNaN(data)) {
+            return 0.0;
+        } else {
+            return data;
         }
-        if (key == keys[1]) {
-            return "#a05d56";
-        }
-        if (key == keys[2]) {
-            return "#d0743c";
-        }
-        if (key == keys[3]) {
-            return "#ff8c00";
-        }
-    };
+    }
+    let lowY = d3.min(finalData, d => d3.min(label, key => getVal(d[key]))) - 5.0;
+    lowY = Math.round(lowY);
+    if (lowY % 2 == 1) {
+        lowY -= 1;
+    }
+    let y = d3.scaleLinear()
+    .domain([lowY, d3.max(finalData, d => d3.max(label, key => getVal(d[key]))) + 5]).nice()
+    .range([height - margin.bottom, margin.top]);
+
+    let x0 = d3.scaleBand()
+        .domain(finalData.map(d => d[groupKey]))
+        .rangeRound([margin.left, width - margin.right])
+        .paddingInner(0.1);
+    let x1 = d3.scaleBand()
+        .domain(label)
+        .rangeRound([0, x0.bandwidth()])
+        .padding(0.05)
+
+    let svg;
+    let tooltip;
+    let gg;
+
+    if (first) {
+        svg = d3.select("#chart4")
+                 .append("svg")
+                 .attr("width", width)
+                 .attr("height", height);
+        tooltip = d3.select("#chart4")
+                 .append("div")
+                 .attr("id", "chart4Tip");
+        tooltip.append("span")
+                          .attr("class", "chart4TipText");
+        gg = svg.append("g")
+                .attr("id", "chart4Main");
+    } else {
+        svg = d3.select("#chart4 > svg");
+        tooltip = d3.select("#chart4 > div");
+        gg = svg.select("#chart4Main");
+    }
+
+    gg 
+        .selectAll("g")
+        .data(finalData)
+        .join("g")
+        .attr("transform", d => `translate(${x0(d[groupKey])},0)`)
+        .selectAll("rect")
+        .data(d => label.map(key => ({key, value: d[key]})))
+        .join("rect")
+        .on("mouseover", function(d) {
+        let xPos = d3.event.clientX - $("#chart4").offset().left;
+        let yPos = d3.event.clientY - $("#chart4").offset().top;
+        d3.select("#chart4Tip")
+            .style("left", (xPos + 6) + "px")
+            .style("top", (yPos - 26) + "px");
+        d3.select(".chart4TipText")
+            .text(function () {
+                if (isNaN(d.value)) {
+                    return city + " :NaN";
+                } else {
+                    return city + " :" + d.value.toString();
+                }
+            });
+        d3.select("#chart4Tip").classed("chart4Tip_hidden", false);
+        })
+        .on("mouseout", function(d) {
+            d3.select("#chart4Tip").classed("chart4Tip_hidden", true);
+        })
+        .transition()
+        .ease(d3.easeBounceOut)
+        .duration(function() {
+            if (first) {
+                return 0;
+            } else {
+                return 2000;
+            }
+        })
+        .attr("x", d => x1(d.key))
+        .attr("y", function (d) {
+            if (isNaN(d.value)) {
+                return height - margin.bottom;
+            } else {
+                return y(d.value);
+            }
+        })
+        .attr("fill", d => color(d.key))
+        .attr("width", x1.bandwidth())
+        .attr("height", function (d) {
+            if (isNaN(d.value)) {
+                return 0.0;
+            }
+            return  -y(d.value) + y(lowY);
+        });
+    if (first) {
+        svg.append("g")
+            .attr("id", "chart4xAxis")
+            .call(xAxis);
+        svg.append("g")
+            .attr("id", "chart4yAxis")
+            .call(yAxis);
+    } else {
+        $("#chart4xAxis").empty()
+        $("#chart4yAxis").empty()
+        svg.select("#chart4xAxis")
+            .call(xAxis);
+        svg.select("#chart4yAxis")
+            .call(yAxis);
+    }
+
     let legend = svg => {
         const g = svg
-            .attr("transform", `translate(100,10)`)
+            .attr("transform", `translate(${width},0)`)
             .attr("text-anchor", "end")
             .attr("font-family", "sans-serif")
             .attr("font-size", 10)
-          .selectAll("g")
-          .data(keys)
-          .join("g")
+            .selectAll("g")
+            .data(color.domain().slice().reverse())
+            // .data([1, 2, 3, 4])
+            .join("g")
             .attr("transform", (d, i) => `translate(0,${i * 20})`);
+
         g.append("rect")
-            .attr("x", 0)
-            .attr("width", 25)
-            .attr("height", 3)
-            .attr("fill", d => z(d));
+            .attr("x", -19)
+            .attr("width", 19)
+            .attr("height", 19)
+            .attr("fill", color);
       
         g.append("text")
             .attr("fill", "#cdddf7")
             .attr("x", -24)
-            .attr("y", 2.5)
+            .attr("y", 9.5)
             .attr("dy", "0.35em")
             .text(d => d);
       };
-
-    let svg;
-    let tooltip;
-    let path;
-    let serie;
-    let pathText;
-    if (first) {
-        // chart4Draw the figure
-        svg = d3.select("#chart4")
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", height);
-        tooltip = d3.select("#chart4")
-                    .append("div")
-                    .attr("id", "chart4Tip");
-        tooltip.append("span")
-                  .attr("class", "chart4TipText");
-        svg.append("g")
-        .attr("id", "chart4xAxis")
-        .call(xAxis);
-
-        svg.append("g")
-        .attr("id", "chart4Legend")
-        .call(legend);
-
-        serie = svg.append("g")
-            .attr("id", "chart4Main")
-            .selectAll("g")
-            .data(series)
-            .join("g");
-        path = serie.append("path");
-        pathText = serie.append("g")
-                        .attr("class", "pathText");
-    } else {
-        svg = d3.select("#chart4 > svg");
-        tooltip = d3.select("#chart4 > div");
-        serie = svg.select("#chart4Main")
-                .selectAll("g:not(.pathText)")
-                .data(series)
-                .join("g");
-        path = serie.select("path");
-        pathText = serie.select(".pathText");
+    if (first) {             
+        svg.append("g").call(legend);
     }
-
-
-    let diffX = 48.5;
-    // Create series
-    let delay = 2000;
-
-    // Append data
-    path
-        .attr("fill", "none")
-        .attr("stroke", d => z(d[0].key))
-        .attr("stroke-width", 2.5)
-        .on("mouseover", function(d) {
-            console.log(d[0].key);
-            let xPos = d3.event.clientX - $("#chart4").offset().left;
-            let yPos = d3.event.clientY - $("#chart4").offset().top;
-            d3.select("#chart4Tip")
-              .style("left", (xPos + 6) + "px")
-              .style("top", (yPos - 26) + "px");
-            d3.select(".chart4TipText")
-              .text(function () {
-                      return city + " :" + d[0].key;
-              });
-            d3.select("#chart4Tip").classed("chart4Tip_hidden", false).transition().delay(delay);
-        })
-        .on("mouseout", function(d) {
-            d3.select("#chart4Tip").classed("chart4Tip_hidden", true).transition().delay(delay);
-        })
-        .transition()
-        .ease(d3.easeBounceOut)
-        .duration(delay)
-        .attr("d", d3.line()
-            .x(d => x(d.date) + diffX)
-            .y(d => y(d.value)))
-        ;
-
-
-        pathText
-            .attr("font-family", "sans-serif")
-            .attr("font-size", 10)
-            .attr("stroke-linecap", "round")
-            .attr("stroke-linejoin", "round")
-            .attr("text-anchor", "middle")
-          .selectAll("text")
-          .data(d => d)
-          .join("text")
-            .text(d => d.value)
-            .attr("dy", "0.35em")
-            .attr("fill", "white")
-            .attr("border-style", "dotted")
-            .attr("border-color", "white")
-            .transition()
-            .ease(d3.easeBounceOut)
-            .duration(function() {
-                if (first) {
-                    return 0;
-                } else {
-                    return delay;
-                }
-            })
-            .attr("x", d => x(d.date) + diffX)
-            .attr("y", d => y(d.value));
 }
+
 (function() {
     "use strict";
     window.addEventListener("load", chart4Initialize);
