@@ -21,6 +21,7 @@ $(function () {
     var RFCONSENSUS; // 存储舆论热度
     var capitalSet={};
     var date='05-12';
+    var brushFlag=1;
     // 创建svg
     var consensusChart=d3.select(".chinaMap-box")
         .append("svg")
@@ -56,18 +57,37 @@ $(function () {
         fillMap(date);
         addBrush();
 
+        getCapitalSet();
         // 默认全国城市的top32数组
         // 临时数据
-        var rectArr=[{city:"上海",value:2},{city:"湖南",value:3},{city:"北京",value:4},{city:"江西",value:5},
-        {city:"北京",value:22},{city:"云南",value:23},{city:"四川",value:14},{city:"贵州",value:25},
-        {city:"河北",value:22},{city:"湖北",value:13},{city:"西藏",value:14},{city:"黑龙江",value:25},
-        {city:"河北",value:22},{city:"湖北",value:33},{city:"西藏",value:14},{city:"黑龙江",value:25},
-        {city:"河北",value:22},{city:"湖北",value:23},{city:"西藏",value:14},{city:"黑龙江",value:25},
-        {city:"河北",value:22},{city:"湖北",value:13},{city:"西藏",value:14},{city:"黑龙江",value:25},
-        {city:"河北",value:22},{city:"湖北",value:3},{city:"西藏",value:14},{city:"黑龙江",value:25},
-        {city:"河北",value:22},{city:"湖北",value:3},{city:"西藏",value:14},{city:"黑龙江",value:25}];
-
-        drawRect(rectArr);
+        let selectedProvinces=[];
+        for(let item in capitalSet){
+            selectedProvinces.push(item);
+        }
+        // 队选中的省份进行排序城市
+        var currentDateSentimentArr=RFCONSENSUS[date];
+        var citiesRectArr=[];
+        selectedProvinces.forEach(function (item) {
+            if(currentDateSentimentArr[item]!==undefined){
+                var currentProvinceKeys=Object.keys(currentDateSentimentArr[item]);
+                for(let i=4;i<currentProvinceKeys.length;i++){
+                    citiesRectArr.push({city:currentProvinceKeys[i],value:currentDateSentimentArr[item][currentProvinceKeys[i]]['sum']});
+                }
+            }
+        });
+        citiesRectArr.sort(function (a,b) {
+            return b.value-a.value;
+        });
+        // top32
+        var citiesRect_top32=[];
+        citiesRectArr.forEach(function (item,i) {
+            if(i<32){
+                citiesRect_top32.push(item);
+            }
+        });
+        drawRect(citiesRect_top32);
+        // 添加事件监听
+        addListenerEvent();
     });
 
     function displayConsensusMap(json,type,chart) {
@@ -80,13 +100,13 @@ $(function () {
                 .attr("d",chinaPath)
                 .attr("stroke","white")
                 .attr("stroke-width",0.5)
-                .attr("fill","black")
-                .attr("opacity",0.6);
+                .attr("fill","#33cccc")
+                .attr("opacity",0.8);
             chart.selectAll(".consensusPathCircle") //显示舆论热度
                 .data(json.features)
                 .enter()
                 .append("circle")
-                .attr("class","consensus_map_circle")
+                .attr("class","consensus_map_circle consensus_heatmap")
                 .attr("cx",function(d,i){
                     if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)||(/澳门/).test(d.properties.name)){
                         return chinaProjection(d.properties.cp)[0]+20;
@@ -158,7 +178,7 @@ $(function () {
                 .attr("d",nanshaPath)
                 .attr("stroke","white")
                 .attr("stroke-width",0.5)
-                .attr("fill","black")
+                .attr("fill","#33cccc")
                 .attr("opacity",0.6)
                 .attr("transform",`translate(-${nanshaProjection([106,23])[0]},-${nanshaProjection([106,23])[1]})`);
         }
@@ -171,7 +191,7 @@ $(function () {
                 .attr("d",nanshaPath)
                 .attr("stroke","white")
                 .attr("stroke-width",0.5)
-                .attr("fill","black")
+                .attr("fill","#33cccc")
                 .attr("opacity",0.6)
                 .attr("transform",`translate(-${nanshaProjection([106,23])[0]},-${nanshaProjection([106,23])[1]})`);
         }
@@ -200,10 +220,16 @@ $(function () {
             .attr("width",function () {
                 return 12;
             })
-            .attr("fill","black")
-            .attr("opacity",0.6)
+            .attr("fill","#33cccc")
+            .attr("opacity",0.8)
             .attr("stroke","white")
-            .attr("stroke-width",1);
+            .attr("stroke-width",1)
+            .on("mouseover",function (d) {
+                d3.select(this).attr("opacity",1.0).attr("cursor","pointer");
+            })
+            .on("mouseout",function (d) {
+                d3.select(this).attr("opacity",0.8).attr("cursor","default");
+            });
         rectChart.selectAll("heatRectText")
             .data(rectArr)
             .enter()
@@ -257,8 +283,7 @@ $(function () {
                 // return colorLab(heatScale(parseInt(currentDateSentimentArr[provinceName]['sum'])));
             });
     }
-
-    function addBrush() {
+    function getCapitalSet() {
         // 获取所有省会的点的位置
         d3.selectAll(".consensus_map_circle").call(function (sel) {
             sel.each(function (d,i) {
@@ -283,39 +308,85 @@ $(function () {
                 capitalSet[d.properties.name]={x:capitalX,y:capitalY}
             });
         });
-        var myBrush=d3.brush().extent([[0,0],[width,height]])
-                    .on("end",updateRectChart);
-        consensusChart.append("g").call(myBrush);
-        function updateRectChart() {
-            let selectedProvinces=[];
-            let extend=d3.event.selection;
-            for(let item in capitalSet){
-                if (capitalSet[item].x>extend[0][0]&&capitalSet[item].y>extend[0][1]
-                    &&capitalSet[item].x<extend[1][0]&&capitalSet[item].y<extend[1][1]){
-                    selectedProvinces.push(item);
-                }
+    }
+    function addBrush() {
+        // 创建刷选按钮
+        $(".chinaMap-box").append("<button id='brush_button'></button>");
+        $("#brush_button").mouseover(function () {
+            if(brushFlag===1){
+                $(this).css("background-image","url(static/images/chinaVis-map/hover_pointer.svg)");
+            } else{
+                $(this).css("background-image","url(static/images/chinaVis-map/hover_brush.svg)");
             }
-            // 队选中的省份进行排序城市
-            var currentDateSentimentArr=RFCONSENSUS[date];
-            var citiesRectArr=[];
-            selectedProvinces.forEach(function (item) {
-                var currentProvinceKeys=Object.keys(currentDateSentimentArr[item]);
-                for(let i=4;i<currentProvinceKeys.length;i++){
-                    citiesRectArr.push({city:currentProvinceKeys[i],value:currentDateSentimentArr[item][currentProvinceKeys[i]]['sum']});
+        })
+        .mouseout(function () {
+            if(brushFlag===1){
+                $(this).css("background-image","url(static/images/chinaVis-map/pointer.svg)");
+            }else{
+                $(this).css("background-image","url(static/images/chinaVis-map/brush.svg)");
+            }
+        })
+        .click(function () {
+            // 按钮样式设置
+            $(this).css("background-image","url(static/images/chinaVis-map/brush.svg)");
+            brushFlag=(brushFlag+1)%2;
+            if(brushFlag===1){
+                $("#brush_g").remove();
+                $(this).css("background-image","url(static/images/chinaVis-map/pointer.svg)");
+                return;
+            }
+            var myBrush=d3.brush().extent([[0,0],[width,0.8*height]])
+                    .on("end",updateRectChart);
+            var myConsensusChart=consensusChart.append("g").attr("id","brush_g");
+            myConsensusChart.call(myBrush);
+            function updateRectChart() {
+                let selectedProvinces=[];
+                let extend=d3.event.selection;
+                for(let item in capitalSet){
+                    if (capitalSet[item].x>extend[0][0]&&capitalSet[item].y>extend[0][1]
+                        &&capitalSet[item].x<extend[1][0]&&capitalSet[item].y<extend[1][1]){
+                        selectedProvinces.push(item);
+                    }
                 }
+                // 队选中的省份进行排序城市
+                var currentDateSentimentArr=RFCONSENSUS[date];
+                var citiesRectArr=[];
+                selectedProvinces.forEach(function (item) {
+                    if(currentDateSentimentArr[item]!==undefined) {
+                        var currentProvinceKeys = Object.keys(currentDateSentimentArr[item]);
+                        for (let i = 4; i < currentProvinceKeys.length; i++) {
+                            citiesRectArr.push({
+                                city: currentProvinceKeys[i],
+                                value: currentDateSentimentArr[item][currentProvinceKeys[i]]['sum']
+                            });
+                        }
+                    }
+                });
+                citiesRectArr.sort(function (a,b) {
+                    return b.value-a.value;
+                });
+                // top32
+                var citiesRect_top32=[];
+                citiesRectArr.forEach(function (item,i) {
+                    if(i<32){
+                        citiesRect_top32.push(item);
+                    }
+                });
+                drawRect(citiesRect_top32);
+            }
+
+        });
+
+    }
+
+    function addListenerEvent() {
+        d3.selectAll(".consensus_heatmap")
+            .on("mouseover",function (d) {
+                d3.select(this).attr("opacity",1.0).attr("cursor","pointer");
+            })
+            .on("mouseout",function (d) {
+                d3.select(this).attr("opacity",0.8).attr("cursor","default");
             });
-            citiesRectArr.sort(function (a,b) {
-                return b.value-a.value;
-            });
-            // top32
-            var citiesRect_top32=[];
-            citiesRectArr.forEach(function (item,i) {
-                if(i<32){
-                    citiesRect_top32.push(item);
-                }
-            });
-            console.log(citiesRect_top32);
-            drawRect(citiesRect_top32);
-        }
+
     }
 });
