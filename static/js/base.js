@@ -1,3 +1,5 @@
+var selected_global;
+
 $('#close-pop1').on('click', function () {
     $(this).parent().parent().hide().find('.cont-div').attr('style', 'visibility: hidden');
 })
@@ -13,7 +15,9 @@ $('#close-pop2').on('click', function () {
 
 $('#setBtn2').on('click', function () {
     $('.container').attr('style', 'visibility: visible').find('#pop-up2').attr('style', 'visibility: visible').siblings().attr('style', 'visibility: hidden');
-    // BaseSearch();
+    riveroption.legend.selected = selected_global;
+    console.log(selected_global);
+    riverChart.setOption(riveroption);
 })
 
 $('#dateBtn').on('click', function () {
@@ -52,6 +56,7 @@ var startTime = {
 
         // 唤醒para-point
         paraPoint(newDateSpl[2]);
+        selected_global=whatariver(newDateSpl[2]);
     }
 };
 
@@ -82,7 +87,8 @@ function dateCss() {
 }
 
 // 初始化渲染
+document.getElementById("startTime").value="2020-05-25";
 paraPoint("25");
-whatariver();
+selected_global=whatariver("25");
 emotion();
 source();
