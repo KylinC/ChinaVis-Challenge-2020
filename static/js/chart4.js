@@ -8,16 +8,16 @@
  */
 var chart4Data;
 function chart4Export(name) {
-    chart4Draw(name);
+    chart4Draw(name, false);
 }
 function chart4FetchCSV() {
     d3.csv("static/data/chart4.csv").then(function(data){
         chart4Data = data;
-        chart4Draw("北京市");
+        chart4Draw("湖北", true);
     });
 }
-function chart4Draw(city) {
-    $("#chart4").empty();
+function chart4Draw(city, first) {
+    console.log(city);
     let data = chart4Data;
     let extractData = [];
     for (let i = 0; i < data.length; i++) {
@@ -54,7 +54,6 @@ function chart4Draw(city) {
     .attr("color", "#cdddf7")
     .attr("transform", `translate(0,${height - margin.bottom})`)
     .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0)) 
-
     let z = function(key) {
         if (key == keys[0]) {
             return "#6b486b";
@@ -93,31 +92,56 @@ function chart4Draw(city) {
             .text(d => d);
       };
 
-    // chart4Draw the figure
-    let svg = d3.select("#chart4")
-              .append("svg")
-              .attr("width", width)
-              .attr("height", height);
-    let tooltip = d3.select("#chart4")
-              .append("div")
-              .attr("id", "chart4Tip");
-    let toolTipText = tooltip.append("span")
+    let svg;
+    let tooltip;
+    let path;
+    let serie;
+    let pathText;
+    if (first) {
+        // chart4Draw the figure
+        svg = d3.select("#chart4")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+        tooltip = d3.select("#chart4")
+                    .append("div")
+                    .attr("id", "chart4Tip");
+        tooltip.append("span")
                   .attr("class", "chart4TipText");
-
-    svg.append("g")
+        svg.append("g")
+        .attr("id", "chart4xAxis")
         .call(xAxis);
 
-    svg.append("g")
+        svg.append("g")
+        .attr("id", "chart4Legend")
         .call(legend);
+
+        serie = svg.append("g")
+            .attr("id", "chart4Main")
+            .selectAll("g")
+            .data(series)
+            .join("g");
+        path = serie.append("path");
+        pathText = serie.append("g")
+                        .attr("class", "pathText");
+    } else {
+        svg = d3.select("#chart4 > svg");
+        tooltip = d3.select("#chart4 > div");
+        serie = svg.select("#chart4Main")
+                .selectAll("g:not(.pathText)")
+                .data(series)
+                .join("g");
+        path = serie.select("path");
+        pathText = serie.select(".pathText");
+    }
+
+
     let diffX = 48.5;
     // Create series
-    let serie = svg.append("g")
-        .selectAll("g")
-        .data(series)
-        .join("g");
-    let delay = 1000;
+    let delay = 2000;
+
     // Append data
-    serie.append("path")
+    path
         .attr("fill", "none")
         .attr("stroke", d => z(d[0].key))
         .attr("stroke-width", 2.5)
@@ -137,12 +161,16 @@ function chart4Draw(city) {
         .on("mouseout", function(d) {
             d3.select("#chart4Tip").classed("chart4Tip_hidden", true).transition().delay(delay);
         })
+        .transition()
+        .ease(d3.easeBounceOut)
+        .duration(delay)
         .attr("d", d3.line()
             .x(d => x(d.date) + diffX)
             .y(d => y(d.value)))
         ;
 
-    serie.append("g")
+
+        pathText
             .attr("font-family", "sans-serif")
             .attr("font-size", 10)
             .attr("stroke-linecap", "round")
@@ -153,13 +181,20 @@ function chart4Draw(city) {
           .join("text")
             .text(d => d.value)
             .attr("dy", "0.35em")
-            .attr("x", d => x(d.date) + diffX)
-            .attr("y", d => y(d.value))
             .attr("fill", "white")
-            .clone(true).lower()
-            .attr("fill", "none")
-            .attr("stroke", "#795548")
-            .attr("stroke-width", 5);
+            .attr("border-style", "dotted")
+            .attr("border-color", "white")
+            .transition()
+            .ease(d3.easeBounceOut)
+            .duration(function() {
+                if (first) {
+                    return 0;
+                } else {
+                    return delay;
+                }
+            })
+            .attr("x", d => x(d.date) + diffX)
+            .attr("y", d => y(d.value));
 }
 (function() {
     "use strict";

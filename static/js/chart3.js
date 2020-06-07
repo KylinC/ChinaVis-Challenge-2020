@@ -10,7 +10,7 @@ var chart3Data;
 function chart3FetchCSV() {
     d3.csv("static/data/chart3.csv").then(function(data){
         chart3Data = data;
-        chart3Draw("北京", true);
+        chart3Draw("武汉", true);
     });
 }
 
@@ -138,7 +138,13 @@ function chart3Draw(city, first) {
         })
         .transition()
         .ease(d3.easeBounceOut)
-        .duration(2000)
+        .duration(function() {
+            if (first) {
+                return 0;
+            } else {
+                return 2000;
+            }
+        })
         .attr("x", d => x1(d.key))
         .attr("y", function (d) {
             if (isNaN(d.value)) {
