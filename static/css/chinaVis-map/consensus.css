@@ -17,3 +17,20 @@
     top: 70%;
     /*border: 1px solid green;*/
 }
+
+/* 刷选按钮样式 */
+#brush_button{
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    height: 24px;
+    width: 24px;
+    outline: none;
+    border: none;
+    font-size: 12px;
+    background-color: #252525;
+    background-image: url(../../images/chinaVis-map/pointer.svg);
+}
+#brush_button:hover{
+    cursor: pointer;
+}
