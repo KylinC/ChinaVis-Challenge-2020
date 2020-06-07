@@ -553,6 +553,7 @@ $(function () {
 
         function displayProvince(d,i){
             // Invoke chart3 function
+            chart1Export(getProvinceAbbr(d.properties.name), caseType);
             chart3Export(getProvinceAbbr(d.properties.name));
             chart4Export(getProvinceAbbr(d.properties.name));
             chart5Export(getProvinceAbbr(d.properties.name));
