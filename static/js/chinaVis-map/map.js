@@ -495,6 +495,7 @@ $(function () {
             // Invoke chart3 function
             chart3Export(getProvinceAbbr(d.properties.name));
             chart4Export(getProvinceAbbr(d.properties.name));
+            chart5Export(getProvinceAbbr(d.properties.name));
 
             $("#province_heatmap_svg").empty();
             provincePageFlag=1;
