@@ -57,6 +57,8 @@ var startTime = {
         // 唤醒para-point
         paraPoint(newDateSpl[2]);
         selected_global=whatariver(newDateSpl[2]);
+        source(newDateSpl[2]);
+        emotion(newDateSpl[2]);
     }
 };
 
@@ -90,5 +92,5 @@ function dateCss() {
 document.getElementById("startTime").value="2020-05-25";
 paraPoint("25");
 selected_global=whatariver("25");
-emotion();
-source();
+emotion("25");
+source("25");

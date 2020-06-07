@@ -114,7 +114,6 @@ function paraPoint(time_str){
             top: '5%',
             inRange: {
                 color: (function(obj) {
-                    console.log(obj);
                     var colors = ['#bcd3bb', '#e88f70', '#edc1a5', '#9dc5c8', '#7b7c68', '#e5b5b5', '#f0b489', '#928ea8', '#bda29a'];
                     return colors.concat(colors);
                 })()
