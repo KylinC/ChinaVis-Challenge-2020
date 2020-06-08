@@ -1,4 +1,5 @@
-var selected_global;
+var selected_global; // 是stream图有动态变化效果共享的全局变量
+var selected_time="25";  // 共享的时间选择变量
 
 $('#close-pop1').on('click', function () {
     $(this).parent().parent().hide().find('.cont-div').attr('style', 'visibility: hidden');
@@ -55,6 +56,7 @@ var startTime = {
         document.getElementById("paraTitle").innerHTML=mainWindowTimeStr+" "+"热词日浏览变化";
 
         // 唤醒para-point
+        selected_time=newDateSpl[2];
         call_paraPoint(newDateSpl[2],"全国");
         selected_global=call_whatariver(newDateSpl[2],"全国");
         call_source(newDateSpl[2],"全国");
