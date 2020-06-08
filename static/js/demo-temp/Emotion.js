@@ -7,12 +7,15 @@ function call_emotion(time_str,area_str){
     })
 }
 
+var tag_container;
+
 function emotion(source_data){
 
     var weekDay = 0;
     var data = [source_data[1][1], source_data[1][2], source_data[1][0]]
+    tag_container=source_data[0];
 
-    option = {
+    Eoption = {
         tooltip: {
             trigger: 'item',
             padding: 10,
@@ -31,13 +34,16 @@ function emotion(source_data){
                 interval: 0,
                 textStyle: {
                     color: '#ddd'
-                }}
+                }
+            }
         },
         polar: {
             center: ['50%', '50%'],
-            radius: 115,
+            radius: 100,
         },
-        radiusAxis: {},
+        radiusAxis: {
+            max:100
+        },
         series: [{
             type: 'bar',
             data: [
@@ -54,8 +60,9 @@ function emotion(source_data){
             stack: 'a',
             itemStyle: {
                 normal: {
-                    borderWidth: 4,
-                    borderColor: '#ffffff',
+                    color:"rgba(255,127,0,0.9)",
+                    // borderWidth: 4,
+                    // borderColor: '#ffffff',
                 },
                 emphasis: {
                     borderWidth: 0,
@@ -80,8 +87,9 @@ function emotion(source_data){
             stack: 'a',
             itemStyle: {
                 normal: {
-                    borderWidth: 4,
-                    borderColor: '#ffffff',
+                    color:"rgba(197,239,73,0.9)",
+                    // borderWidth: 4,
+                    // borderColor: '#ffffff',
                 },
                 emphasis: {
                     borderWidth: 0,
@@ -106,8 +114,9 @@ function emotion(source_data){
             stack: 'a',
             itemStyle: {
                 normal: {
-                    borderWidth: 3,
-                    borderColor: '#ffffff',
+                    color:"rgba(220,62,73,0.9)",
+                    // borderWidth: 3,
+                    // borderColor: '#ffffff',
                 },
                 emphasis: {
                     borderWidth: 3,
@@ -119,7 +128,7 @@ function emotion(source_data){
         }, {
             name: 'Emotion',
             type: 'pie',
-            radius: ['65%', '80%'],
+            radius: ['68%', '76%'],
             avoidLabelOverlap: false,
             label: {
                 normal: {
@@ -142,14 +151,23 @@ function emotion(source_data){
                 }
             },
             data: [{
-                value: data["0"].value["0"],
-                name: data["0"].name
+                value: data["0"].value["3"],
+                name: data["0"].name,
+                itemStyle:{
+                    color:"rgba(255,127,0,0.9)"
+                }
             }, {
-                value: data["1"].value["0"],
-                name: data["1"].name
+                value: data["1"].value["3"],
+                name: data["1"].name,
+                itemStyle:{
+                    color:"rgba(197,239,73,0.9)"
+                }
             }, {
-                value: data["2"].value["0"],
-                name: data["2"].name
+                value: data["2"].value["3"],
+                name: data["2"].name,
+                itemStyle:{
+                    color:"rgba(220,62,73,0.9)"
+                }
             }],
             legend: {
                 show: true,
@@ -160,8 +178,8 @@ function emotion(source_data){
             },
             itemStyle: {
                 normal: {
-                    borderWidth: 3,
-                    borderColor: '#ffffff',
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
                 },
                 emphasis: {
                     borderWidth: 3,
@@ -177,13 +195,13 @@ function emotion(source_data){
         var valuesFormatter = [];
         if (params.componentSubType == 'pie') {
             valuesFormatter.push(
-                '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
-                option.angleAxis.data[weekDay].value + '<br>' + '</div>' +
+                '<div style="border-bottom: 1px solid rgba(255,255,255,.3);color:rgb(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
+                Eoption.angleAxis.data[weekDay] + '<br>' + '</div>' +
                 '<span style="color:' + params.color + '">' + params.name + '</span>: ' + params.value
             );
         } else {
             valuesFormatter.push(
-                '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
+                '<div style="border-bottom: 1px solid rgba(255,255,255,.3);color:rgb(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
                 params.seriesName +
                 '</div>' +
                 '<span style="color:' + params.color + '">' + params.name + '</span>: ' + params.value + '<br>');
@@ -191,27 +209,30 @@ function emotion(source_data){
 
         return valuesFormatter;
     }
-    emotionChart.setOption(option);
+    emotionChart.setOption(Eoption);
+
+    emotionChart.on('click', function(params) {
+        if (params.componentSubType != 'pie') {
+            weekDay = params.dataIndex;
+            Eoption.series[3].data[0].value = data[0].value[weekDay];
+            Eoption.series[3].data[1].value = data[1].value[weekDay];
+            Eoption.series[3].data[2].value = data[2].value[weekDay];
+            var weekDayData=[];
+            for(var i=0;i<tag_container.length;i++){
+                weekDayData.push(tag_container[i]);
+            }
+            weekDayData[weekDay] = {
+                value: weekDayData[weekDay],
+                textStyle: {
+                    fontSize: 20,
+                }
+            };
+            Eoption.angleAxis.data = weekDayData;
+            emotionChart.setOption(Eoption);
+        }
+    });
 }
 
 window.onresize = function() {
     emotionChart.resize();
 };
-
-emotionChart.on('click', function(params) {
-    if (params.componentSubType != 'pie') {
-        weekDay = params.dataIndex;
-        option.series[3].data[0].value = data[0].value[weekDay];
-        option.series[3].data[1].value = data[1].value[weekDay];
-        option.series[3].data[2].value = data[2].value[weekDay];
-        var weekDayData = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];;
-        weekDayData[weekDay] = {
-            value: weekDayData[weekDay],
-            textStyle: {
-                fontSize: 25,
-            }
-        };
-        option.angleAxis.data = weekDayData;
-        emotionChart.setOption(option);
-    }
-});
