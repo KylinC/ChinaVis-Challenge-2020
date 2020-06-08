@@ -119,7 +119,7 @@ function emotion(source_data){
         }, {
             name: 'Emotion',
             type: 'pie',
-            radius: ['75%', '80%'],
+            radius: ['65%', '80%'],
             avoidLabelOverlap: false,
             label: {
                 normal: {

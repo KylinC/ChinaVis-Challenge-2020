@@ -442,6 +442,7 @@ $(function () {
     function addListenerEvent() {
         d3.selectAll(".consensus_heatmap")
             .on("click",function(d,i){
+                sizeFunction = city_func;
                 console.log(d.properties.name,selected_time);
                 call_paraPoint(selected_time,d.properties.name);
                 selected_global=call_whatariver(selected_time,d.properties.name);

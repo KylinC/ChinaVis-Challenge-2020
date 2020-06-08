@@ -47,6 +47,8 @@ var startTime = {
         startV = datas;
     
         // 重置逻辑
+        sizeFunction = all_func;
+
         let newDateSpl=startV.split("-");
         let mainWindowTimeStr=parseInt(newDateSpl[1])+"月"+parseInt(newDateSpl[2])+"日";
 
@@ -54,6 +56,8 @@ var startTime = {
         document.getElementById("mainwindow-data").innerHTML=mainWindowTimeStr;
         document.getElementById("KGTitle").innerHTML=mainWindowTimeStr+" "+"流量新闻知识图谱";
         document.getElementById("paraTitle").innerHTML=mainWindowTimeStr+" "+"热词日浏览变化";
+        document.getElementById("siteTitle").innerHTML=mainWindowTimeStr+" "+"舆论站点分布趋势";
+        document.getElementById("emotionTitle").innerHTML=mainWindowTimeStr+" "+"一周舆论情感趋势";
 
         // 唤醒para-point
         selected_time=newDateSpl[2];

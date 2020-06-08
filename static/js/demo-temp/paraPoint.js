@@ -1,5 +1,17 @@
 const parapointChart = echarts.init(document.getElementById("para-point"));
 
+var all_func=function(x) {
+    var y = Math.sqrt(x / 3900) + 0.1;
+    return y*30;
+};
+
+var city_func=function(x) {
+    var y = Math.sqrt(Math.sqrt(x)/3) + 0.1;
+    return y*30;
+};
+
+var sizeFunction = all_func;
+
 function call_paraPoint(time_str,area_str){
     $.getJSON("static/data/Heat/"+area_str+".json", function (data){
         var source_data=data[time_str];
@@ -132,10 +144,6 @@ function paraPoint(source_selected_data){
     
         }],
         series: render_data
-    };
-    var sizeFunction = function(x) {
-        var y = Math.sqrt(x / 3900) + 0.1;
-        return y*30;
     };
     parapointChart.setOption(option);
 }

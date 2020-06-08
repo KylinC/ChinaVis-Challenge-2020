@@ -33,7 +33,7 @@ $(function () {
     console.log(['china',width,height]);
     console.log(['province',pWidth,pHeight]);
 
-    var mapCenterPos={x:width/2,y:height/2};
+    var mapCenterPos={x:width/2,y:height/2+40};
     var provinceCenter={x:pWidth/2,y:pHeight/2};
 
     var chinaProjection=d3.geoMercator().center([105,32]).translate([mapCenterPos.x,mapCenterPos.y]).scale(chinaScale); // 调整地图中心位置
