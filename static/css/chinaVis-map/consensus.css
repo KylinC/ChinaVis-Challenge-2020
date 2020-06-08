@@ -17,3 +17,57 @@
     top: 70%;
     /*border: 1px solid green;*/
 }
+
+/* 刷选按钮样式 */
+#brush_button{
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    height: 24px;
+    width: 24px;
+    outline: none;
+    border: none;
+    font-size: 12px;
+    background-color: #252525;
+    background-image: url(../../images/chinaVis-map/pointer.svg);
+}
+#brush_button:hover{
+    cursor: pointer;
+}
+
+
+/* tooltip类 */
+#my_tooltip {
+    position: absolute;
+    left:0;
+    top:0;
+    font-size: 12px;
+}
+#my_tooltip .tooltiptext {
+    visibility: visible;
+    background-color: black;
+    opacity: 0.6;
+    min-width: 150px;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 1px 2px 1px 2px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+}
+#my_tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    opacity: 0.6;
+    border-color: transparent black transparent transparent;
+}
+.my_tooltip_hidden{
+    display: none;
+}

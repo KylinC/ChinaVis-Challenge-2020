@@ -26,17 +26,23 @@ $(function () {
     var height=$("#china_heatmap_div").height();
     var pWidth=$(".province_map").width();
     var pHeight=$(".province_map").height();
+    var chinaScale=0.9*width;
+    var provinceScale=6*pWidth;
+
+    console.log(["view",viewportWidth,viewportHeight]);
+    console.log(['china',width,height]);
+    console.log(['province',pWidth,pHeight]);
 
     var mapCenterPos={x:width/2,y:height/2};
     var provinceCenter={x:pWidth/2,y:pHeight/2};
 
-    var chinaProjection=d3.geoMercator().center([105,32]).translate([mapCenterPos.x,mapCenterPos.y]).scale(500); // 调整地图中心位置
+    var chinaProjection=d3.geoMercator().center([105,32]).translate([mapCenterPos.x,mapCenterPos.y]).scale(chinaScale); // 调整地图中心位置
     var chinaPath=d3.geoPath().projection(chinaProjection);
 
-    var provinceProjection=d3.geoMercator().center([112,32]).translate([provinceCenter.x,provinceCenter.y]).scale(2000); // 调整地图中心位置
+    var provinceProjection=d3.geoMercator().center([112,32]).translate([provinceCenter.x,provinceCenter.y]).scale(provinceScale); // 调整地图中心位置
     var provincePath=d3.geoPath().projection(provinceProjection);
 
-    var nanshaProjection=d3.geoMercator().center([106,23]).scale(200); // 调整地图中心位置
+    var nanshaProjection=d3.geoMercator().center([106,23]).scale(0.36*chinaScale); // 调整地图中心位置
     var nanshaPath=d3.geoPath().projection(nanshaProjection);
 
     var chinaSvg=d3.select("#china_heatmap_div")
@@ -63,6 +69,9 @@ $(function () {
     var currentGlobalMapData={};
     var cityCaseArr={};// 全局保存当前省份的城市案例
     var provincePageFlag=0;
+    var currentProvince='湖北';
+    var chinaCase;
+    var delay=1000; //动画延迟
 
     createDateSeletor();
     $("#confirmed_button").css({"background-color":"#0e94eb","color":"white"});
@@ -70,19 +79,20 @@ $(function () {
     /* 数据异步加载: 异步任务放入队列，加载完成之后在绘制热力图 */
     var files = ["static/data/chinaVis-map/china.json?t="+new Date().getTime(),
         "static/data/chinaVis-map/island.json?t="+new Date().getTime(),
-        "static/data/chinaVis-map/nansha.json?t="+new Date().getTime()];
+        "static/data/chinaVis-map/nansha.json?t="+new Date().getTime(),
+     "static/data/chinaVis-map/case/chinaCase/chinaCase.json?t="+new Date().getTime()];
     var promises = [];
     files.forEach(function(url) {
         promises.push(d3.json(url))
     });
 
     Promise.all(promises).then(function(values) {
-        console.log(values[0]);
         displayMap(values[0],1);
         displayMap(values[1],2);
         displayMap(values[2],3);
         mapLabel(1);
-        loadCurrentDateCase(1); // 初始化
+        chinaCase=values[3];
+        loadCurrentDateCase(); // 初始化
     });
 
     /* 地图绘制(type:1-mainland,2-island,3-nansha) */
@@ -273,31 +283,19 @@ $(function () {
 
         });
     }
-    function fillProvinceColor(){
-        d3.selectAll(".province_map").attr("fill",function(d,i){
-            if(caseType===1){
-                return colorLab(myScale(cityCaseArr[d.properties.name],colorGradient));
-            }else if(caseType===2){
-                return colorLab2(myScale(cityCaseArr[d.properties.name],colorGradient2));
-            }else{
-                return colorLab3(myScale(cityCaseArr[d.properties.name],colorGradient3));
-            }
-        });
-        d3.selectAll(".province_map_circle").attr("fill",circleColors[caseType-1]);
-    }
 
     /* 点击后显示当天热力图 */
     function loadCurrentDateCase(){
+        console.log(chinaCase);
         var currentFiles=[];
         var preWeekArr=getPreWeekDate('2020-'+currentDateStr,7);
         preWeekArr.forEach(function (item,index) {
-            currentFiles.push("static/data/chinaVis-map/case/province_case_"+item+".json?t="+new Date().getTime());
+            currentFiles.push("static/data/chinaVis-map/case/provinceCase/province_case_"+item+".json?t="+new Date().getTime());
         });
         promises = [];
         currentFiles.forEach(function(url) {
             promises.push(d3.json(url))
         });
-        console.log(currentFiles);
         Promise.all(promises).then(function(values) {
             fillMapColor(values[0]);
             showCaseCircle(values);
@@ -309,6 +307,10 @@ $(function () {
                 // $(".china_map_text").fadeIn("slow");
                 // $(".china_map_circle").fadeIn("slow");
             }
+            // 更新全国确诊治愈死亡信息
+            $("#confirmed >p").text(chinaCase[currentDateStr]['累计确诊']);
+            $("#cured >p").text(chinaCase[currentDateStr]['累计治愈']);
+            $("#dead >p").text(chinaCase[currentDateStr]['累计死亡']);
         });
     }
 
@@ -379,7 +381,8 @@ $(function () {
         }
         showDefaultDateTooltip("#date_2020-"+currentDateStr);
         $(".sub_date_rect_div").mouseover(function(e){
-            let xPosition=this.offsetLeft;
+            showDefaultDateTooltip("#date_2020-"+currentDateStr);
+            let xPosition=this.offsetLeft-$("#date_rect_div").scrollLeft();
             let yPosition=this.offsetTop;
             d3.select("#date_tooltip")
                 .style("left",(xPosition+28)+"px")
@@ -392,9 +395,8 @@ $(function () {
             d3.select("#date_tooltip").classed("date_tooltip_hidden",true);
         })
         .click(function(){
-            let xPosition=this.offsetLeft;
+            let xPosition=this.offsetLeft-$("#date_rect_div").scrollLeft();
             let yPosition=this.offsetTop;
-            console.log([xPosition,yPosition]);
             d3.select("#default_tooltip")
                 .style("left",(xPosition+28)+"px")
                 .style("top",(yPosition-4)+"px");
@@ -404,15 +406,20 @@ $(function () {
         $("#date_2020-"+currentDateStr).css("background-color","rgb(10, 170, 233)");
     }
     function showDefaultDateTooltip(selector){
-        let xPosition=document.querySelector(selector).offsetLeft;
+        let xPosition=document.querySelector(selector).offsetLeft-$("#date_rect_div").scrollLeft();
         let yPosition=document.querySelector(selector).offsetTop;
-        console.log([xPosition,yPosition]);
         d3.select("#default_tooltip")
             .style("left",(xPosition+28)+"px")
             .style("top",(yPosition-4)+"px");
         d3.select(".default_tooltiptext")
             .text(selector.split('_')[1]);
-        d3.select("#default_tooltip").classed("default_tooltip_hidden",false);
+        console.log($("#date_rect_div").width());
+        if (xPosition<$("#date_rect_div").position().left||(xPosition>($("#date_rect_div").position().left+$("#date_rect_div").width()))){
+            d3.select("#default_tooltip").classed("default_tooltip_hidden",true);
+        }
+        else{
+            d3.select("#default_tooltip").classed("default_tooltip_hidden",false);
+        }
     }
 
 
@@ -458,12 +465,75 @@ $(function () {
                 $(".sub_date_rect_div").css("background-color","white");
                 $("#date_2020-"+currentDateStr).css("background-color","rgb(10, 170, 233)");
                 loadCurrentDateCase();
+                fillProvinceColor();
             }
         };
+        /** 填充省份地图颜色 */
+        function fillProvinceColor(){
+        d3.selectAll(".china_map").call(function (sel) {
+            sel.each(function (d,i) {
+                if(d.properties.name.slice(0,2)===currentProvince){
+                    displayProvince(d,i);
+                }
+            });
+        });
+        }
+
+        /** 省份圆圈标签 */
+        function provinceLabel() {
+            provinceSvg.selectAll("circleLabel")
+                .data(currentColorGradient)
+                .enter()
+                .append("circle")
+                .attr("cx",function (d,i) {
+                    return 20+i*36;
+                })
+                .attr("cy",function (d,i) {
+                    return pHeight-24;
+                })
+                .attr("r",function (d,i) {
+                    if(caseType===1){
+                        return 20*myScale(d,currentColorGradient);
+                    }else if(caseType===2){
+                        return 20*myScale(d,currentColorGradient);
+                    }else{
+                        return 20*myScale(d,currentColorGradient);
+                    }
+                })
+                .attr("fill",circleColors[caseType-1])
+                .attr("stroke",0);
+            // 省份圆圈标签
+            provinceSvg.selectAll(".provinceCircleText")
+                .data(currentColorGradient)
+                .enter()
+                .append("text")
+                .attr("class","province_circle_text")
+                .attr("x",function (d,i) {
+                    return 20+i*36;
+                })
+                .attr("y",function (d,i) {
+                    return pHeight;
+                })
+                .attr("text-anchor","middle")
+                .attr("fill","white")
+                .attr("font-size",5)
+                .text(function(d,i){
+                    if(i===0) return d;
+                    else if(i>=1&&i<8){
+                        return currentColorGradient[i]+'-'+currentColorGradient[i+1];
+                    }
+                    else{
+                        return '>'+d;
+                    }
+                });
+        }
         /** 地图省份监听: 点击某省展示相应内部病例信息 */
         d3.selectAll(".china_map")
             .on("mouseover",function(d,i){
-                d3.select(this).attr("stroke","rgb(70,130,180)").style("cursor","pointer").attr("opacity",1.0);
+                d3.select(this).style("cursor","pointer")
+                    .transition()
+                    .duration(delay/2)
+                    .attr("stroke","rgb(70,130,180)").attr("opacity",1.0);
                 let xPosition=d3.event.clientX-$("#china_heatmap_div").offset().left;
                 let yPosition=d3.event.clientY-$("#china_heatmap_div").offset().top;
                 d3.select("#my_tooltip")
@@ -477,7 +547,10 @@ $(function () {
                 d3.select("#my_tooltip").classed("my_tooltip_hidden",false);
             })
             .on("mouseout",function(d,i){
-                d3.select(this).attr("stroke","black").style("cursor","default").attr("opacity",0.6);
+                d3.select(this).style("cursor","default")
+                    .transition()
+                    .duration(delay/2)
+                    .attr("stroke","black").attr("opacity",0.6);
                 d3.select("#my_tooltip").classed("my_tooltip_hidden",true);
             })
             .on("click",displayProvince);
@@ -485,7 +558,7 @@ $(function () {
 
         d3.selectAll(".china_map").call(function (sel) {
             sel.each(function (d,i) {
-                if(d.properties.name.slice(0,2)==='湖北'){
+                if(d.properties.name.slice(0,2)===currentProvince){
                     displayProvince(d,i);
                 }
             });
@@ -493,22 +566,28 @@ $(function () {
 
         function displayProvince(d,i){
             // Invoke chart3 function
+            chart1Export(getProvinceAbbr(d.properties.name), caseType);
             chart3Export(getProvinceAbbr(d.properties.name));
             chart4Export(getProvinceAbbr(d.properties.name));
             chart5Export(getProvinceAbbr(d.properties.name));
 
             $("#province_heatmap_svg").empty();
+            provinceLabel();
             provincePageFlag=1;
             // $(".china_map").animate({opacity:0.2},"slow");
             // $(".china_map").fadeOut("slow");
             // $(".china_map_text").fadeOut("slow");
             // $(".china_map_circle").fadeOut("slow");
+            // $(".province_map").fadeIn("slow");
+            // $(".province_map_text").fadeIn("slow");
+            // $(".province_map_circle").fadeIn("slow");
 
             /** 获取省名字 */
             let provinceName=d.properties.name.slice(0,2);
+            currentProvince=provinceName;
             /** 加载某省具体数据 */
             var files = ["static/data/chinaVis-map/geometryProvince/"+d.properties.id+".json?t="+new Date().getTime(),
-                "static/data/chinaVis-map/case/case_"+currentDateStr+".json?t="+new Date().getTime()];
+                "static/data/chinaVis-map/case/cityCase/city_case_"+currentDateStr+".json?t="+new Date().getTime()];
             var promises = [];
             files.forEach(function(url) {
                 promises.push(d3.json(url))
@@ -528,21 +607,28 @@ $(function () {
                     }
                     caseJson=caseJson[provinceName];
                     let cityNameArr=Object.keys(caseJson);
-                    if((/新疆/).test(d.properties.name)||(/西藏/).test(d.properties.name)||(/内蒙古/).test(d.properties.name)||(/黑龙江/).test(d.properties.name)){
-                        provinceProjection.center([d.properties.cp[0]+2,d.properties.cp[1]]).scale(1500); //重新绘制比例尺
+                    if((/新疆/).test(d.properties.name)||(/西藏/).test(d.properties.name)||(/内蒙古/).test(d.properties.name)
+                        ||(/黑龙江/).test(d.properties.name)){
+                        provinceProjection.center([d.properties.cp[0]+2,d.properties.cp[1]]).scale(0.4*provinceScale); //重新绘制比例尺
                     }
-                    else if((/重庆/).test(d.properties.name)||(/海南/).test(d.properties.name)){
-                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(6000); //重新绘制比例尺
+                    else if((/青海/).test(d.properties.name)||(/四川/).test(d.properties.name)){
+                        provinceProjection.center([d.properties.cp[0]+2,d.properties.cp[1]]).scale(0.75*provinceScale); //重新绘制比例尺
+                    }
+                    else if((/重庆/).test(d.properties.name)){
+                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(1.5*provinceScale); //重新绘制比例尺
+                    }
+                    else if((/台湾/).test(d.properties.name)||(/海南/).test(d.properties.name)){
+                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(3*provinceScale); //重新绘制比例尺
                     }
                     else if((/北京/).test(d.properties.name)||(/天津/).test(d.properties.name)){
-                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(10000); //重新绘制比例尺
+                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(4*provinceScale); //重新绘制比例尺
                     }
-                    else if((/台湾/).test(d.properties.name)||(/澳门/).test(d.properties.name)||
+                    else if((/澳门/).test(d.properties.name)||
                         (/香港/).test(d.properties.name)||(/上海/).test(d.properties.name)){
-                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(18000); //重新绘制比例尺
+                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(3*provinceScale); //重新绘制比例尺
                     }
                     else{
-                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(2500); //重新绘制比例尺
+                        provinceProjection.center([d.properties.cp[0],d.properties.cp[1]]).scale(provinceScale); //重新绘制比例尺
                     }
                     provinceSvg.selectAll(".provincePath")
                         .data(mapJson.features)
@@ -567,7 +653,9 @@ $(function () {
                                     return 0; // 不存在返回0
                                 }
                             }
-                            d3.select(this).attr("stroke","rgb(70,130,180)").style("cursor","pointer");
+                            d3.select(this)
+                                .style("cursor","pointer")
+                                .attr("stroke","rgb(70,130,180)");
                             let xPosition=d3.event.clientX-$("#china_heatmap_div").offset().left;
                             let yPosition=d3.event.clientY-$("#china_heatmap_div").offset().top;
                             d3.select("#my_tooltip")
@@ -706,6 +794,9 @@ $(function () {
                         .data(mapJson.features)
                         .enter()
                         .append("text")
+                        .transition()
+                        .ease(d3.easeLinear)
+                        .duration(delay)
                         .attr("class","province_map_text")
                         .attr("text-anchor","middle")
                         .attr("font-size",9)

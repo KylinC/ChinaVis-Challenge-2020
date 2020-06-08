@@ -4,6 +4,7 @@
  */
 
 const dayStep=86400000;
+const transitionDelay=1000;
  /* 比例尺 */
 function myScale(number,arr){
     if(number>=arr[0]&&number<arr[1]){
@@ -78,6 +79,9 @@ function drawLineChart(lineArr,origin,gChart,color){
         return origin.y-d-1;
     });
     gChart.append("path")
+        .transition()
+        .ease(d3.easeCircleIn)
+        .duration(transitionDelay/2)
     .attr("stroke",color)
     .attr("stroke-width",2)
     .attr("fill","none")
@@ -100,4 +104,56 @@ function drawLineChart(lineArr,origin,gChart,color){
     .attr("stroke","white")
     .attr("stroke-width",1)
     .attr("fill","none");
+}
+
+function drawPieChart(pieArr,origin,gChart,colors,radius){
+    var arc=d3.arc()
+                .innerRadius(0)
+                .outerRadius(radius);
+    var pie=d3.pie();//创建饼状布局
+    var arcs=gChart.selectAll("g.arc")
+                    .data(pie(pieArr))
+                    .enter()
+                    .append("g")
+                    .attr("transform","translate("+origin.x+","+origin.y+")");
+    arcs.append("path")
+        .attr("class","arc")
+        .on("mouseover",function(d,i){
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .attr("transform","scale(1.1)")
+                .attr("opacity",1.0);
+                 let xPosition=d3.event.clientX-$(".chinaMap-box").offset().left;
+                let yPosition=d3.event.clientY-$(".chinaMap-box").offset().top;
+                d3.select("#my_tooltip")
+                    .style("left",(xPosition+6)+"px")
+                    .style("top",(yPosition+6)+"px")
+                d3.select(".tooltiptext")
+                    .text(function(){
+                        if(i===0){
+                            return "舆情热度-正面 "+d.value;
+                        } else if(i===1){
+                            return "舆情热度-负面 "+d.value;
+                        } else{
+                            return "舆情热度-中立 "+d.value;
+                        }
+                    });
+            d3.select("#my_tooltip").classed("my_tooltip_hidden",false);
+        })
+        .on("mouseout",function(d,i){
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .attr("transform","scale(1)");
+            d3.select("#my_tooltip").classed("my_tooltip_hidden",false);
+        })
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(transitionDelay)
+        .attr("d",arc)
+        .attr("opacity",0.8)
+        .attr("fill",function(d,i){
+            return colors[i];
+        })
 }
