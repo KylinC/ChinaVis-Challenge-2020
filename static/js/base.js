@@ -57,7 +57,7 @@ var startTime = {
         // 唤醒para-point
         call_paraPoint(newDateSpl[2],"全国");
         selected_global=call_whatariver(newDateSpl[2],"全国");
-        source(newDateSpl[2]);
+        call_source(newDateSpl[2],"全国");
         call_emotion(newDateSpl[2],"全国");
     }
 };
@@ -94,4 +94,4 @@ call_paraPoint("25","全国");
 selected_global=call_whatariver("25","全国");
 console.log(selected_global);
 call_emotion("25","全国");
-source("25");
+call_source("25","全国");
