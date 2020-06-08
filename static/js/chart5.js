@@ -17,6 +17,7 @@ function chart5FetchCSV() {
     });
 }
 function chart5Draw(city, first) {
+    $(".chart5Title").text(city + "房地产市场发展情况");
     let data = chart5Data;
     let extractData = [];
     for (let i = 0; i < data.length; i++) {
@@ -107,7 +108,8 @@ function chart5Draw(city, first) {
                     .attr("height", height);
         tooltip = d3.select("#chart5")
                     .append("div")
-                    .attr("id", "chart5Tip");
+                    .attr("id", "chart5Tip")
+                    .classed("chart5Tip_hidden", true);
         tooltip.append("span")
                   .attr("class", "chart5TipText");
         svg.append("g")

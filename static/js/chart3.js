@@ -17,6 +17,7 @@ function chart3FetchCSV() {
     });
 }
 function chart3Draw(city, first) {
+    $(".chart3Title").text(city + "工业发展情况");
     let data = chart3Data;
     let extractData = [];
     for (let i = 0; i < data.length; i++) {
@@ -39,7 +40,7 @@ function chart3Draw(city, first) {
     }
 
     let height = $("#chart3").height(), width = $("#chart3").width();
-    let margin = ({top: 10, right: 50, bottom: 20, left: 30});
+    let margin = ({top: 5, right: 50, bottom: 20, left: 30});
     let labelPadding = 3;
     let diff = d3.max(series, s => d3.max(s, d => d.value)) - d3.min(series, s => d3.min(s, d => d.value));
     let y = d3.scaleLinear()
@@ -104,7 +105,8 @@ function chart3Draw(city, first) {
                     .attr("height", height);
         tooltip = d3.select("#chart3")
                     .append("div")
-                    .attr("id", "chart3Tip");
+                    .attr("id", "chart3Tip")
+                    .classed("chart3Tip_hidden", true);;
         tooltip.append("span")
                   .attr("class", "chart3TipText");
         svg.append("g")
