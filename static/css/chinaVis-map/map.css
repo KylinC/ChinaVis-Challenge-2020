@@ -19,7 +19,7 @@
 /* 日期选择样式设置 */
 #date_div{
     position: absolute;
-    top: 500px;
+    top: 90%;
     height: 30px;
     width: 100%;
     display: flex;
