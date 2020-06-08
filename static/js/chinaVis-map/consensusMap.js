@@ -45,6 +45,7 @@ $(function () {
         .attr("height",0.3*height);
     $(".chinaMap-box").append("<div id=\"my_tooltip\" class=\"my_tooltip_hidden\">\n" +
         "<span class=\"tooltiptext\"></span></div>");
+     // $(".chinaMap-box").append("<button id='brush_button'></button>");
     // 异步加载地图进行绘制
     var files = ["static/data/chinaVis-map/china.json?t="+new Date().getTime(),
                 "static/data/chinaVis-map/island.json?t="+new Date().getTime(),
@@ -367,7 +368,6 @@ $(function () {
     }
     function addBrush() {
         // 创建刷选按钮
-        $(".chinaMap-box").append("<button id='brush_button'></button>");
         $("#brush_button").mouseover(function () {
             if(brushFlag===1){
                 $(this).css("background-image","url(static/images/chinaVis-map/hover_pointer.svg)");
