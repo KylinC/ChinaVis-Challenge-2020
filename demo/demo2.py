@@ -128,3 +128,35 @@ def click_node():
     json_data = json.dumps({"nodes": nodes, "edges": edges, "catas": list(cata.keys())})
     callback = request.args.get('callback')
     return Response('{}({})'.format(callback, json_data))
+
+@mod2.route("/demo2/layout", methods=['POST'])
+def draw_layout():
+    data = request.get_data()
+    data_input = json.loads(data)
+    print(data_input)
+
+    nodeList = []
+
+    if(data_input[1]=='全国'):
+        neoorder = 'MATCH (p:HotPoint{time:"%s"}) WHERE p.name =~".*新冠.*" RETURN p LIMIT 5' % (data_input[0])
+    else:
+        neoorder = 'MATCH (p:HotPoint{time:"%s",geo:"%s"}) RETURN p LIMIT 5' % (data_input[0],data_input[1])
+
+    with driver.session() as session:
+        results = session.run(neoorder).values()
+        pass
+
+    for result in results:
+        nodeList.append(result[0])
+
+    # print(nodeList)
+
+    nodes = []
+    for nodeRecord in nodeList:
+        tmp_node = {"id": nodeRecord._id, "label": list(nodeRecord._labels)[0]}
+        tmp_node.update(dict(nodeRecord._properties))
+        nodes.append(tmp_node)
+
+    json_data=json.dumps({'nodes':nodes})
+    callback = request.args.get('callback')
+    return Response('{}({})'.format(callback, json_data))

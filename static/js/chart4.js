@@ -20,6 +20,7 @@ function chart4Export(name) {
 
 function chart4Draw(city, first) {
     // $("#chart4").empty();
+    $(".chart4Title").text(city + "价格指数变化图");
     let height = $("#chart4").height(), width = $("#chart4").width();
     let margin = ({top: 5, right: 10, bottom: 30, left: 40});
     let label = ["居民消费价格指数", "商品零售价格指数","工业生产购进价格指数","工业生产出厂价格指数"];
@@ -98,7 +99,8 @@ function chart4Draw(city, first) {
                  .attr("height", height);
         tooltip = d3.select("#chart4")
                  .append("div")
-                 .attr("id", "chart4Tip");
+                 .attr("id", "chart4Tip")
+                 .classed("chart4Tip_hidden", true);
         tooltip.append("span")
                           .attr("class", "chart4TipText");
         gg = svg.append("g")
