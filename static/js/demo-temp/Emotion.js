@@ -1,17 +1,16 @@
 const emotionChart = echarts.init(document.getElementById("emotion"));
 
-function emotion(){
+function call_emotion(time_str,area_str){
+    $.getJSON("static/data/Emotion/"+area_str+".json", function (data){
+        var source_data=data[time_str];
+        emotion(source_data);
+    })
+}
+
+function emotion(source_data){
+
     var weekDay = 0;
-    var data = [{
-        name: 'Pos',
-        value: [1, 2, 5, 7, 6, 7, 1]
-    }, {
-        name: 'Neu',
-        value: [3, 4, 5, 8, 2, 9, 10]
-    }, {
-        name: 'Neg',
-        value: [2, 4, 5, 7, 3, 9, 11]
-    }]
+    var data = [source_data[1][1], source_data[1][2], source_data[1][0]]
 
     option = {
         tooltip: {
@@ -25,7 +24,7 @@ function emotion(){
         },
         angleAxis: {
             type: 'category',
-            data: ['11', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
+            data: source_data[0],
             z: 10,
             axisLabel: {
                 fontSize: 10,
@@ -36,7 +35,7 @@ function emotion(){
         },
         polar: {
             center: ['50%', '50%'],
-            radius: 95,
+            radius: 115,
         },
         radiusAxis: {},
         series: [{
@@ -199,20 +198,20 @@ window.onresize = function() {
     emotionChart.resize();
 };
 
-// emotionChart.on('click', function(params) {
-//     if (params.componentSubType != 'pie') {
-//         weekDay = params.dataIndex;
-//         option.series[3].data[0].value = data[0].value[weekDay];
-//         option.series[3].data[1].value = data[1].value[weekDay];
-//         option.series[3].data[2].value = data[2].value[weekDay];
-//         var weekDayData = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];;
-//         weekDayData[weekDay] = {
-//             value: weekDayData[weekDay],
-//             textStyle: {
-//                 fontSize: 25,
-//             }
-//         };
-//         option.angleAxis.data = weekDayData;
-//         emotionChart.setOption(option);
-//     }
-// });
+emotionChart.on('click', function(params) {
+    if (params.componentSubType != 'pie') {
+        weekDay = params.dataIndex;
+        option.series[3].data[0].value = data[0].value[weekDay];
+        option.series[3].data[1].value = data[1].value[weekDay];
+        option.series[3].data[2].value = data[2].value[weekDay];
+        var weekDayData = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];;
+        weekDayData[weekDay] = {
+            value: weekDayData[weekDay],
+            textStyle: {
+                fontSize: 25,
+            }
+        };
+        option.angleAxis.data = weekDayData;
+        emotionChart.setOption(option);
+    }
+});

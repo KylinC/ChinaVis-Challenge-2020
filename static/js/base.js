@@ -55,8 +55,10 @@ var startTime = {
         document.getElementById("paraTitle").innerHTML=mainWindowTimeStr+" "+"热词日浏览变化";
 
         // 唤醒para-point
-        paraPoint(newDateSpl[2]);
-        selected_global=whatariver(newDateSpl[2]);
+        call_paraPoint(newDateSpl[2],"全国");
+        selected_global=call_whatariver(newDateSpl[2],"全国");
+        source(newDateSpl[2]);
+        call_emotion(newDateSpl[2],"全国");
     }
 };
 
@@ -88,7 +90,8 @@ function dateCss() {
 
 // 初始化渲染
 document.getElementById("startTime").value="2020-05-25";
-paraPoint("25");
-selected_global=whatariver("25");
-emotion();
-source();
+call_paraPoint("25","全国");
+selected_global=call_whatariver("25","全国");
+console.log(selected_global);
+call_emotion("25","全国");
+source("25");
