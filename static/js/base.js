@@ -61,6 +61,7 @@ var startTime = {
         selected_global=call_whatariver(newDateSpl[2],"全国");
         call_source(newDateSpl[2],"全国");
         call_emotion(newDateSpl[2],"全国");
+        BaseLayout(newDateSpl[2],"全国");
     }
 };
 
@@ -97,3 +98,5 @@ selected_global=call_whatariver("25","全国");
 console.log(selected_global);
 call_emotion("25","全国");
 call_source("25","全国");
+
+BaseLayout("25","全国")

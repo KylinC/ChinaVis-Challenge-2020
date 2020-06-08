@@ -447,6 +447,7 @@ $(function () {
                 selected_global=call_whatariver(selected_time,d.properties.name);
                 call_source(selected_time,d.properties.name);
                 call_emotion(selected_time,d.properties.name);
+                BaseLayout(selected_time,d.properties.name);
             })
             .on("mouseover",function (d) {
                 d3.select(this).style("cursor","pointer")
