@@ -12,7 +12,7 @@ $(function () {
     var width=$(".chinaMap-box").width();
     var mapCenterPos={x:width/2,y:height/2};
     var colorLab=d3.interpolateLab("rgb(255,255,255)","#ff9900");
-    var pieColors=["#ff9933","#ffff66","#ff4d4d"];
+    var pieColors=["#ff4d4d","#ffff66","#ff9933"];
     var chinaScale=0.9*width;
 
     var chinaProjection=d3.geoMercator().center([105,30]).translate([mapCenterPos.x,mapCenterPos.y]).scale(chinaScale); // 调整地图中心位置
@@ -43,6 +43,7 @@ $(function () {
         .attr("id","consensus_rect_svg")
         .attr("width",width)
         .attr("height",0.3*height);
+        // 地图缩放
     $(".chinaMap-box").append("<div id=\"my_tooltip\" class=\"my_tooltip_hidden\">\n" +
         "<span class=\"tooltiptext\"></span></div>");
      // $(".chinaMap-box").append("<button id='brush_button'></button>");
@@ -542,5 +543,38 @@ $(function () {
                     return '中立';
                 }
             })
+    }
+    var zoom=d3.zoom().on("zoom",zooming);
+    consensusChart.call(zoom)
+            .call(zoom.transform,d3.zoomIdentity.translate(mapCenterPos.x,mapCenterPos.y).scale(0.25));
+    function zooming(){
+        var offset=[d3.event.transform.x,d3.event.transform.y];
+        var newScale=d3.event.transform.k*2000;
+        chinaProjection.translate([offset[0],offset[1]]).scale(newScale);
+        d3.selectAll(".china_consensus_map").attr("d",chinaPath);
+        d3.selectAll(".consensus_map_text")
+                .attr("x",function(d,i){
+                    if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)||(/澳门/).test(d.properties.name)){
+                        return chinaProjection(d.properties.cp)[0]+20;
+                    }
+                    else if((/香港/).test(d.properties.name)){
+                        return chinaProjection(d.properties.cp)[0]+10;
+                    }
+                    else if((/甘肃/).test(d.properties.name)){
+                        return chinaProjection(d.properties.cp)[0]+20;
+                    }
+                    return chinaProjection(d.properties.cp)[0];
+                })
+                .attr("y",function(d,i){
+                    if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)){
+                        return chinaProjection(d.properties.cp)[1]+30;
+                    }
+                    else if((/澳门/).test(d.properties.name)||(/香港/).test(d.properties.name)){
+                        return chinaProjection(d.properties.cp)[1]+10;
+                    }
+                    return chinaProjection(d.properties.cp)[1];
+                });
+        drawPies();
+
     }
 });

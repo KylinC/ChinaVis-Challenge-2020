@@ -29,10 +29,6 @@ $(function () {
     var chinaScale=0.9*width;
     var provinceScale=6*pWidth;
 
-    console.log(["view",viewportWidth,viewportHeight]);
-    console.log(['china',width,height]);
-    console.log(['province',pWidth,pHeight]);
-
     var mapCenterPos={x:width/2,y:height/2};
     var provinceCenter={x:pWidth/2,y:pHeight/2};
 
@@ -73,6 +69,17 @@ $(function () {
     var chinaCase;
     var delay=1000; //动画延迟
 
+    // 初始化图例
+    function initialLabelChart(){
+        drawLineChart([4,6,16,10,8,12,3],{x:20,y:60},chinaSvg,circleColors[caseType-1]);
+        chinaSvg.append("text")
+            .attr("x",44)
+            .attr("y",60)
+            .attr("font-size",10)
+            .attr("fill","white")
+            .text("前一周新增趋势");
+    }
+    initialLabelChart();
     createDateSeletor();
     $("#confirmed_button").css({"background-color":"#0e94eb","color":"white"});
 
@@ -102,7 +109,7 @@ $(function () {
                 .data(json.features)
                 .enter()
                 .append("path")
-                .attr("class","china_map heatmap")
+                .attr("class","china_map heatmap china_map_scale")
                 .attr("d",chinaPath)
                 .attr("stroke","black")
                 .attr("stroke-width",0.5)
@@ -829,6 +836,62 @@ $(function () {
             })
             .on("mouseout",function(d,i){
                 d3.select("#my_tooltip").classed("my_tooltip_hidden",true);
+            });
+    }
+    var zoom=d3.zoom().on("zoom",zooming);
+    chinaSvg.call(zoom)
+            .call(zoom.transform,d3.zoomIdentity.translate(mapCenterPos.x,mapCenterPos.y).scale(0.25));
+    function zooming(){
+        var offset=[d3.event.transform.x,d3.event.transform.y];
+        var newScale=d3.event.transform.k*2000;
+        chinaProjection.translate([offset[0],offset[1]]).scale(newScale);
+        d3.selectAll(".china_map_scale").attr("d",chinaPath);
+        d3.selectAll(".china_map_text")
+            .attr("x",function(d,i){
+                if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)||(/澳门/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[0]+20;
+                }
+                else if((/香港/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[0]+10;
+                }
+                else if((/甘肃/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[0]+20;
+                }
+                return chinaProjection(d.properties.cp)[0];
+            })
+            .attr("y",function(d,i){
+                if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[1]+30;
+                }
+                else if((/澳门/).test(d.properties.name)||(/香港/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[1]+10;
+                }
+                return chinaProjection(d.properties.cp)[1];
+            });
+        loadCurrentDateCase();
+    }
+    // 省份缩放
+    var pZoom=d3.zoom().on("zoom",pZooming);
+    provinceSvg.call(pZoom)
+            .call(pZoom.transform,d3.zoomIdentity.translate(provinceCenter.x,provinceCenter.y).scale(0.3));
+    function pZooming(){
+        var offset=[d3.event.transform.x,d3.event.transform.y];
+        var newScale=d3.event.transform.k*3000;
+        provinceProjection.translate([offset[0],offset[1]]).scale(newScale);
+        d3.selectAll(".province_map").attr("d",provincePath);
+        d3.selectAll(".province_map_text")
+            .attr("x",function(d){
+                return provinceProjection(d.properties.cp)[0];
+            })
+            .attr("y",function(d){
+                return provinceProjection(d.properties.cp)[1];
+            });
+        d3.selectAll(".province_map_circle")
+            .attr("cx",function(d,i){
+                return provinceProjection(d.properties.cp)[0];
+            })
+            .attr("cy",function(d,i){
+                return provinceProjection(d.properties.cp)[1];
             });
     }
 });
