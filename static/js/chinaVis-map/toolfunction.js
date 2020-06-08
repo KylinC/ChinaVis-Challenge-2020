@@ -82,12 +82,14 @@ function drawLineChart(lineArr,origin,gChart,color){
         .transition()
         .ease(d3.easeCircleIn)
         .duration(transitionDelay/2)
+        .attr("class","line_map_scale")
     .attr("stroke",color)
     .attr("stroke-width",2)
     .attr("fill","none")
     .attr("d",line(lineArr));
 
     gChart.append("line")
+        .attr("class","line_map_scale")
     .attr("x1",origin.x)
     .attr("y1",origin.y-21)
     .attr("x2",origin.x)
@@ -97,6 +99,7 @@ function drawLineChart(lineArr,origin,gChart,color){
     .attr("fill","none");
 
     gChart.append("line")
+        .attr("class","line_map_scale")
     .attr("x1",origin.x+21)
     .attr("y1",origin.y)
     .attr("x2",origin.x)
