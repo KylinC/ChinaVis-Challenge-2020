@@ -134,13 +134,13 @@ function linePlot(province, item) {
         xAxis.selectAll("path").style("stroke", "white");
         xAxis.selectAll("text").style("stroke", "white");
 
-        // Add x axis label
-        svg.append("text")
-            .attr("transform", "translate(" + (10 + width / 2) + "," + (height + 30) + ")")
-            .attr("font-size", "10px")
-            .attr("text-anchor", "middle")
-            .style("fill", "white")
-            .text("Date");
+        // // Add x axis label
+        // svg.append("text")
+        //     .attr("transform", "translate(" + (10 + width / 2) + "," + (height + 30) + ")")
+        //     .attr("font-size", "10px")
+        //     .attr("text-anchor", "middle")
+        //     .style("fill", "white")
+        //     .text("Date");
 
         console.log(yData);
         var yScale = d3.scaleLinear()
@@ -247,11 +247,22 @@ function linePlot(province, item) {
             allData.push([xRange[i], yData[i]]);
         }
 
+        var cumulatedColor = ""
+        if (item == "confirmed") {
+            cumulatedColor = "#F08080";
+        } else {
+            if (item == "dead") {
+                cumulatedColor = "#C0C0C0";
+            } else {
+                cumulatedColor = "#98FB98";
+            }
+        }
+
         // Add the area
         area.append("path")
             .datum(allData)
             .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
-            .attr("fill", "#87CEFA")
+            .attr("fill", cumulatedColor)
             .attr("fill-opacity", .3)
             .attr("stroke", "black")
             .attr("stroke-width", 1)
@@ -267,7 +278,7 @@ function linePlot(province, item) {
         area.append("path")
             .datum(allDataDelta)
             .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
-            .attr("fill", "#FF8C00")
+            .attr("fill", "#FFFF00")
             .attr("fill-opacity", .3)
             .attr("stroke", "black")
             .attr("stroke-width", 1)
@@ -332,7 +343,7 @@ function linePlot(province, item) {
             area
                 .select('.myArea')
                 .transition()
-                .attr("d", areaGenerator1, areaGenerator2)
+                .attr("d", areaGenerator1)
         });
     });
 }
