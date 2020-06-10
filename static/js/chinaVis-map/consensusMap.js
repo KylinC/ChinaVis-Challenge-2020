@@ -119,7 +119,7 @@ $(function () {
                 .attr("d",chinaPath)
                 .attr("stroke","white")
                 .attr("stroke-width",0.5)
-                .attr("fill","#33cccc")
+                .attr("fill","#94b8b8")
                 .attr("opacity",0.8);
             chart.selectAll(".consensusPathText")
                 .data(json.features)
@@ -198,7 +198,7 @@ $(function () {
                 .attr("d",nanshaPath)
                 .attr("stroke","white")
                 .attr("stroke-width",0.5)
-                .attr("fill","#33cccc")
+                .attr("fill","#94b8b8")
                 .attr("opacity",0.6)
                 .attr("transform",`translate(-${nanshaProjection([106,23])[0]},-${nanshaProjection([106,23])[1]})`);
         }
@@ -211,7 +211,7 @@ $(function () {
                 .attr("d",nanshaPath)
                 .attr("stroke","white")
                 .attr("stroke-width",0.5)
-                .attr("fill","#33cccc")
+                .attr("fill","#94b8b8")
                 .attr("opacity",0.6)
                 .attr("transform",`translate(-${nanshaProjection([106,23])[0]},-${nanshaProjection([106,23])[1]})`);
         }

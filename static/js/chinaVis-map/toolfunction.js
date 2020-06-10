@@ -58,6 +58,13 @@ function  getPreWeekDate(curDate,pre_n) {
     }
     return preDateArr;
 }
+/**获取接下来一天**/
+function  getNextDate(curDate) {
+    var currentDate=new Date(curDate);
+    var currentSecond=currentDate.getTime();
+    let tempDate=new Date(currentSecond+dayStep);
+    return (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
+}
 
 /** 获取省份简称 */
 function getProvinceAbbr(provinceName){
@@ -83,30 +90,30 @@ function drawLineChart(lineArr,origin,gChart,color){
         .ease(d3.easeCircleIn)
         .duration(transitionDelay/2)
         .attr("class","line_map_scale")
-    .attr("stroke",color)
-    .attr("stroke-width",2)
-    .attr("fill","none")
-    .attr("d",line(lineArr));
+        .attr("stroke",color)
+        .attr("stroke-width",2)
+        .attr("fill","none")
+        .attr("d",line(lineArr));
 
     gChart.append("line")
         .attr("class","line_map_scale")
-    .attr("x1",origin.x)
-    .attr("y1",origin.y-21)
-    .attr("x2",origin.x)
-    .attr("y2",origin.y)
-    .attr("stroke","white")
-    .attr("stroke-width",1)
-    .attr("fill","none");
+        .attr("x1",origin.x)
+        .attr("y1",origin.y-21)
+        .attr("x2",origin.x)
+        .attr("y2",origin.y)
+        .attr("stroke","white")
+        .attr("stroke-width",1)
+        .attr("fill","none");
 
     gChart.append("line")
         .attr("class","line_map_scale")
-    .attr("x1",origin.x+21)
-    .attr("y1",origin.y)
-    .attr("x2",origin.x)
-    .attr("y2",origin.y)
-    .attr("stroke","white")
-    .attr("stroke-width",1)
-    .attr("fill","none");
+        .attr("x1",origin.x+21)
+        .attr("y1",origin.y)
+        .attr("x2",origin.x)
+        .attr("y2",origin.y)
+        .attr("stroke","white")
+        .attr("stroke-width",1)
+        .attr("fill","none");
 }
 
 function drawPieChart(pieArr,origin,gChart,colors,radius){
