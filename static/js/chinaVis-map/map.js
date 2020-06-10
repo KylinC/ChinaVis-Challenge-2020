@@ -29,6 +29,11 @@ $(function () {
     var chinaScale=0.9*width;
     var provinceScale=6*pWidth;
 
+    console.log(["view",viewportWidth,viewportHeight]);
+    console.log(['china',width,height]);
+    console.log(['province',pWidth,pHeight]);
+
+    var mapCenterPos={x:width/2,y:height/2+40};
     var mapCenterPos={x:width/2,y:height/2};
     var provinceCenter={x:pWidth/2,y:pHeight/2};
 

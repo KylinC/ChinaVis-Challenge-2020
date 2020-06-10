@@ -51,8 +51,6 @@ function chart5Draw(city, first) {
     let x = d3.scaleOrdinal()
     .domain(["2020年2月", "2020年3月", "2020年4月"])
     .range([margin.left, (width - margin.right + margin.left) / 2, width - margin.right]);
-    console.log(width - margin.right)
-    console.log(x("2020年4月"))
     let xAxis = g => g
     .attr("color", "#cdddf7")
     .attr("transform", `translate(0,${height - margin.bottom})`)
