@@ -249,7 +249,7 @@ function linePlot(province, item) {
                 .attr("height", 3)
                 .attr("fill", function (d, i) {
                     if (i == 0) {
-                        return "#3a6380";
+                        return "#624041";
                     } else {
                         return "#826c4e";
                     }
@@ -300,11 +300,22 @@ function linePlot(province, item) {
             allData.push([xRange[i], yData[i]]);
         }
 
+        var cumulatedColor = ""
+        if (item == "confirmed") {
+            cumulatedColor = "#F08080";
+        } else {
+            if (item == "dead") {
+                cumulatedColor = "#C0C0C0";
+            } else {
+                cumulatedColor = "#98FB98";
+            }
+        }
+
         // Add the area
         area.append("path")
             .datum(allData)
             .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
-            .attr("fill", "#87CEFA")
+            .attr("fill", cumulatedColor)
             .attr("fill-opacity", .3)
             .attr("stroke", "black")
             .attr("stroke-width", 1)
@@ -319,7 +330,7 @@ function linePlot(province, item) {
         area.append("path")
             .datum(allDataDelta)
             .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
-            .attr("fill", "#FF8C00")
+            .attr("fill", "#FFFF00")
             .attr("fill-opacity", .3)
             .attr("stroke", "black")
             .attr("stroke-width", 1)
@@ -385,7 +396,7 @@ function linePlot(province, item) {
             area
                 .select('.myArea')
                 .transition()
-                .attr("d", areaGenerator1, areaGenerator2)
+                .attr("d", areaGenerator1)
         });
     });
 }
