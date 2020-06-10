@@ -164,12 +164,12 @@ function linePlot(province, item, first) {
 
         if (first) {
         // Add x axis label
-        svg.append("text")
-            .attr("transform", "translate(" + (3 * width / 4) + "," + (height + 25) + ")")
-            .attr("font-size", "10px")
-            .attr("text-anchor", "middle")
-            .attr("fill", "#cdddf7")
-            .text("日期");
+        // svg.append("text")
+        //     .attr("transform", "translate(" + (3 * width / 4) + "," + (height + 25) + ")")
+        //     .attr("font-size", "10px")
+        //     .attr("text-anchor", "middle")
+        //     .attr("fill", "#cdddf7")
+        //     .text("日期");
 
         }
 
