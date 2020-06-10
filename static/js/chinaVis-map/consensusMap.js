@@ -42,7 +42,7 @@ $(function () {
         .append("svg")
         .attr("id","consensus_rect_svg")
         .attr("width",width)
-        .attr("height",0.3*height);
+        .attr("height",0.4*height);
         // 地图缩放
     $(".chinaMap-box").append("<div id=\"my_tooltip\" class=\"my_tooltip_hidden\">\n" +
         "<span class=\"tooltiptext\"></span></div>");
@@ -274,42 +274,46 @@ $(function () {
      * */
     function drawRect(rectArr) {
         $("#consensus_rect_svg").empty();
-        rectChart.selectAll("heatRect")
-            .data(rectArr)
-            .enter()
-            .append("rect")
-            .attr("class","heat_rect")
-            .on("mouseover",function (d) {
-                d3.select(this).attr("opacity",1.0).attr("cursor","pointer");
-            })
-            .on("mouseout",function (d) {
-                d3.select(this).attr("opacity",0.8).attr("cursor","default");
-            })
-            .transition()
-            .ease(d3.easeBounceOut)
-            .duration(delay)
-            .attr("x",function (d,i) {
-                return 16*i+10;
-            })
-            .attr("y",function (d) {
-                if (d.value>500){
-                    return 0.3*height-Math.sqrt(30*500)-26;
-                }
-                return 0.3*height-Math.sqrt(30*d.value)-26;
-            })
-            .attr("height",function (d) {
-                if (d.value>500){
-                    return Math.sqrt(30*500);
-                }
-                return Math.sqrt(30*d.value);
-            })
-            .attr("width",function () {
-                return 12;
-            })
-            .attr("fill","#33cccc")
-            .attr("opacity",0.8)
-            .attr("stroke","white")
-            .attr("stroke-width",1);
+        var padding=20;
+        var stack=d3.stack()
+                    .keys(["positive","negative","neutral"])
+                    .order(d3.stackOrderDescending);
+        var series=stack(rectArr);
+
+        var xScale = d3.scaleBand()
+				.domain(d3.range(rectArr.length))
+				.range([padding, width-padding])
+				.paddingInner(0.05);
+
+		var yScale = d3.scaleLinear()
+				.domain([d3.min(rectArr, function(d) {return d['positive'] + d['negative'] + d['neutral'];}),d3.max(rectArr, function(d) {return d['positive'] + d['negative'] + d['neutral'];})])
+				.range([0.4*height-2*padding, padding]);
+
+        var groups=rectChart.selectAll("g")
+                    .data(series)// 执行三次
+                    .enter()
+                    .append("g")
+                    .style("fill",(d,i)=>{ return pieColors[i];})
+
+        groups.selectAll("rect")
+				.data(function(d) { return d; })
+				.enter()
+				.append("rect")
+                .attr("class","heat_rect")
+                .on("mouseover",function (d) {
+                    d3.select(this).attr("opacity",1.0).attr("cursor","pointer");
+                })
+                .on("mouseout",function (d) {
+                    d3.select(this).attr("opacity",0.8).attr("cursor","default");
+                })
+                .transition()
+                .ease(d3.easeBounceOut)
+                .duration(delay)
+				.attr("x", function(d, i) { return xScale(i);})
+				.attr("y", function(d) { return yScale(d[1]); })
+				.attr("height", function(d) {return yScale(d[0]) - yScale(d[1]);})
+                .attr("width", xScale.bandwidth());
+        
         rectChart.selectAll("heatRectText")
             .data(rectArr)
             .enter()
@@ -319,16 +323,16 @@ $(function () {
             .ease(d3.easeLinear)
             .duration(delay)
             .attr("x",function (d,i) {
-                return 16*i+10;
+                return xScale(i);
             })
             .attr("y",function (d) {
-                return 0.3*height-20;
+                return 0.4*height-1.6*padding;
             })
             .attr("font-size",8)
             .attr("fill","white")
             .attr("text-anchor","start")
             .attr("transform",function (d,i) {
-                return "rotate(60,"+(16*i+10)+","+(0.3*height-18)+")";
+                return "rotate(60,"+xScale(i)+","+(0.4*height-1.6*padding)+")";
             })
             .text(function (d,i) {
                 return d.city;
@@ -490,6 +494,7 @@ $(function () {
             });
         d3.selectAll(".heat_rect")
             .on("mouseover",function (d,i) {
+                console.log(d);
                 d3.select(this).style("cursor","pointer")
                     .attr("opacity",1.0);
                 let xPosition=d3.event.clientX-$(".chinaMap-box").offset().left;
@@ -499,9 +504,9 @@ $(function () {
                     .style("top",(yPosition-30)+"px")
                 d3.select(".tooltiptext")
                     .html(function(){
-                        return d.city+" 舆论热度 "+d.value
-                            +"<br>正面 "+d.positive+
-                            " 负面 "+d.negative+" 中立 "+d.neutral;
+                        return d['data'].city+" 舆论热度 "+d['data'].value
+                            +"<br>正面 "+d['data'].positive+
+                            " 负面 "+d['data'].negative+" 中立 "+d['data'].neutral;
                     });
                 d3.select("#my_tooltip").classed("my_tooltip_hidden",false);
             })
