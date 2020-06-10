@@ -114,35 +114,52 @@ function linePlot(province, item) {
             .transition()
             .ease(d3.easeBounce);
 
+        var xDataList = [];
         var xRange = [];
-
         for (var i = 0; i < xData.length; ++i) {
             xRange.push(i);
+            // let strD = xData[i].substring(6, 10);
+            xDataList.push(xData[i]);
         }
 
+        console.log(xDataList);
+        var xWidth = [];
+        for (var i = 0; i < xData.length; ++i) {
+            xWidth.push(width * i * 1.0 / xData.length);
+        }
         var xScale = d3.scaleLinear()
             .domain([d3.min(xRange), d3.max(xRange)])
             .range([0, width]);
 
+        let temp = [];
+        for (let i = yData.length - 1; i >= 0; --i) {
+            temp.push(xData[i].substring(6, 10));
+        }
+
+        let abbData = temp;
+
+        
+
         // Add x axis and vertical lines
+
         var xAxis = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + height + ")")
-            .call(d3.axisBottom(xScale).tickSizeOuter(0)
-                .tickSizeInner(0));
+            .call(d3.axisBottom(xScale).ticks(8).tickSizeOuter(0)
+                .tickSizeInner(0).tickFormat((d)=> abbData[d] ));
 
-        xAxis.selectAll("line").style("stroke", "white");
+        xAxis.selectAll("line").style("stroke", "#cdddf7");
         xAxis.selectAll("path").style("stroke", "white");
-        xAxis.selectAll("text").style("stroke", "white");
+        xAxis.selectAll("text").style("fill", "#cdddf7");
 
         // Add x axis label
         svg.append("text")
-            .attr("transform", "translate(" + (10 + width / 2) + "," + (height + 30) + ")")
+            .attr("transform", "translate(" + (3 * width / 4) + "," + (height + 25) + ")")
             .attr("font-size", "10px")
             .attr("text-anchor", "middle")
-            .style("fill", "white")
-            .text("Date");
+            .attr("fill", "#cdddf7")
+            .text("日期");
 
-        console.log(yData);
+
         var yScale = d3.scaleLinear()
             .domain([d3.min(yData) * 0.8, d3.max(yData) * 1.2])
             .range([height, 0]);
@@ -153,17 +170,16 @@ function linePlot(province, item) {
             .call(d3.axisLeft(yScale).tickSizeOuter(0)
                 .tickSizeInner(0));
 
-        yAxis.selectAll("line").style("stroke", "white");
+        yAxis.selectAll("line").style("stroke", "#cdddf7");
         yAxis.selectAll("path").style("stroke", "white");
-        yAxis.selectAll("text").style("stroke", "white");
+        yAxis.selectAll("text").style("fill", "#cdddf7");
 
-        let temp = [];
-        for (let i = yData.length - 1; i >= 0; --i) {
-            temp.push(yData[i]);
+        temp = [];
+            for (let i = yData.length - 1; i >= 0; --i) {
+                temp.push(yData[i]);
         }
+
         yData = temp;
-
-
         temp = [];
         for (let i = xData.length - 1; i >= 0; --i) {
             temp.push(xData[i]);
@@ -174,7 +190,6 @@ function linePlot(province, item) {
         let deltaY = [0]
         for(var i = 1; i < yData.length; ++i) {
             deltaY.push(yData[i] - yData[i-1])
-            console.log(deltaY)
         }
 
         var yRScale = d3.scaleLinear()
@@ -187,9 +202,9 @@ function linePlot(province, item) {
             .call(d3.axisRight(yRScale).tickSizeOuter(0)
                 .tickSizeInner(0));
 
-        yRAxis.selectAll("line").style("stroke", "white");
+        yRAxis.selectAll("line").style("stroke", "#cdddf7");
         yRAxis.selectAll("path").style("stroke", "white");
-        yRAxis.selectAll("text").style("stroke", "white");
+        yRAxis.selectAll("text").style("fill", "#cdddf7");
 
     //     let statusWord = "";
     //     if (item == "dead") {
@@ -208,8 +223,46 @@ function linePlot(province, item) {
     //         .attr("text-anchor", "middle")
     //         .style("fill", "white")
     //         .text(province + statusWord + "人数");
-
+        let chItem;
+        if (item == 'confirmed') {
+            chItem = "确诊";
+        } else if (item == 'cured'){
+            chItem = '治愈';
+        } else {
+            chItem = '死亡';
+        }
+        let keys = [chItem + "累计量", chItem + "新增量"]
         // Reverse time value
+        let legend = svg => {
+            const g = svg
+                .attr("transform", `translate(100,10)`)
+                .attr("text-anchor", "end")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 10)
+              .selectAll("g")
+              .data(keys)
+              .join("g")
+                .attr("transform", (d, i) => `translate(${width / 5},${i * 15})`);
+            g.append("rect")
+                .attr("x", 0)
+                .attr("width", 25)
+                .attr("height", 3)
+                .attr("fill", function (d, i) {
+                    if (i == 0) {
+                        return "#3a6380";
+                    } else {
+                        return "#826c4e";
+                    }
+                });
+          
+            g.append("text")
+                .attr("fill", "#cdddf7")
+                .attr("x", -24)
+                .attr("y", 2.5)
+                .attr("dy", "0.35em")
+                .text(d => d);
+          };
+          svg.append("g").call(legend);
 
 
         // Add a clipPath: everything out of this area won't be drawn.
@@ -257,7 +310,6 @@ function linePlot(province, item) {
             .attr("stroke-width", 1)
             .attr("d", areaGenerator1);
 
-        console.log(deltaY);
 
         var allDataDelta = [];
         for (var i = 0; i < xData.length; ++i) {
@@ -294,22 +346,23 @@ function linePlot(province, item) {
             if (!extent) {
                 if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
                 xScale.domain([4, 8])
-                xAxis.selectAll("line").style("stroke", "white");
+                xAxis.selectAll("line").style("stroke", "#cdddf7");
                 xAxis.selectAll("path").style("stroke", "white");
-                xAxis.selectAll("text").style("stroke", "white");
+                xAxis.selectAll("text").style("fill", "#cdddf7");
             } else {
                 xScale.domain([xScale.invert(extent[0]), xScale.invert(extent[1])])
-                xAxis.selectAll("line").style("stroke", "white");
+                xAxis.selectAll("line").style("stroke", "#cdddf7");
                 xAxis.selectAll("path").style("stroke", "white");
-                xAxis.selectAll("text").style("stroke", "white");
+                xAxis.selectAll("text").style("fill", "#cdddf7");
                 area.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
             }
 
             // Update axis and area position
-            xAxis.transition().duration(1000).call(d3.axisBottom(xScale))
-            xAxis.selectAll("line").style("stroke", "white");
+            xAxis.transition().duration(1000).call(d3.axisBottom(xScale).ticks(8).tickSizeOuter(0)
+            .tickSizeInner(0).tickFormat((d)=> abbData[d]));
+            xAxis.selectAll("line").style("stroke", "#cdddf7");
             xAxis.selectAll("path").style("stroke", "white");
-            xAxis.selectAll("text").style("stroke", "white");
+            xAxis.selectAll("text").style("fill", "#cdddf7");
             area
                 .select('.myArea')
                 .transition()
@@ -326,9 +379,9 @@ function linePlot(province, item) {
         svg.on("dblclick", function () {
             xScale.domain([d3.min(xRange), d3.max(xRange)])
             xAxis.transition().call(d3.axisBottom(xScale))
-            xAxis.selectAll("line").style("stroke", "white");
+            xAxis.selectAll("line").style("stroke", "#cdddf7");
             xAxis.selectAll("path").style("stroke", "white");
-            xAxis.selectAll("text").style("stroke", "white");
+            xAxis.selectAll("text").style("fill", "#cdddf7");
             area
                 .select('.myArea')
                 .transition()
