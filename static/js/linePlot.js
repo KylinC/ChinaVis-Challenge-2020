@@ -1,9 +1,9 @@
 // window.addEventListener("load", init);
 var provinceData = {};
-
-// function init() {
-//     linePlot("湖北省", "confirmed");
-// }
+var first = true
+function init() {
+    linePlot("湖北省", "confirmed");
+}
 
 function chart1Export(province, caseType) {
     var status = "";
@@ -16,10 +16,13 @@ function chart1Export(province, caseType) {
             status = "dead";
         }
     }
-    linePlot(province, status);
+    linePlot(province, status, first);
+    if (first) {
+        first = false;
+    }
 }
 
-function linePlot(province, item) {
+function linePlot(province, item, first) {
     // Modify chart name
     var newName = province + "省内疫情趋势"
     document.getElementById("chart1Title").innerHTML = newName;
@@ -41,7 +44,6 @@ function linePlot(province, item) {
                         let temp_dict = {};
                         temp_dict[date] = count;
                         confirmedData[province] = temp_dict;
-                        console.log(confirmedData);
                     } else {
                         confirmedData[province][date] = count;
                     }
@@ -69,7 +71,6 @@ function linePlot(province, item) {
             }
         }
 
-        console.log(confirmedData);
 
         let xData = [];
         let yData = [];
@@ -85,7 +86,6 @@ function linePlot(province, item) {
         }
 
         if (item == "confirmed") {
-            console.log(confirmedData[province]);
             xData = Object.keys(confirmedData[province]);
             yData = Object.values(confirmedData[province]);
         }
@@ -93,26 +93,30 @@ function linePlot(province, item) {
         var div = document.getElementById("linePlot");
 
         var rect = div.getBoundingClientRect();
-        console.log(rect);
 
         var margin = { top: rect.height / 8, right: rect.width / 10, bottom: rect.height / 10, left: rect.width/6},
             width = rect.width - margin.left - margin.right - 20,
             height = rect.height - margin.top - margin.bottom;
 
-        d3.select(".LP").remove();
+        // d3.select(".LP").remove();
 
         div = d3.select("#linePlot");
 
-        var svg = div.append("svg")
-            .attr("class", "LP")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("transform", "translate(" + 0 + "," + margin.top + ")");
+        let svg;
+        if (first) {
+            svg = div.append("svg")
+                .attr("class", "LP")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .attr("transform", "translate(" + 0 + "," + margin.top + ")");
+        } else {
+            svg = d3.select(".LP");
+        }
 
-        svg.transition()
-            .duration(2000)
-            .transition()
-            .ease(d3.easeBounce);
+        // svg.transition()
+        //     .duration(2000)
+        //     .transition()
+        //     .ease(d3.easeBounce);
 
         var xDataList = [];
         var xRange = [];
@@ -122,7 +126,6 @@ function linePlot(province, item) {
             xDataList.push(xData[i]);
         }
 
-        console.log(xDataList);
         var xWidth = [];
         for (var i = 0; i < xData.length; ++i) {
             xWidth.push(width * i * 1.0 / xData.length);
@@ -141,16 +144,25 @@ function linePlot(province, item) {
         
 
         // Add x axis and vertical lines
-
-        var xAxis = svg.append("g")
-            .attr("transform", "translate(" + margin.left + "," + height + ")")
-            .call(d3.axisBottom(xScale).ticks(8).tickSizeOuter(0)
+        let xAxis;
+        if (first) {
+            xAxis = svg.append("g")
+                .attr("id", "chart1xAxis")
+                .attr("transform", "translate(" + margin.left + "," + height + ")")
+                .call(d3.axisBottom(xScale).ticks(8).tickSizeOuter(0)
                 .tickSizeInner(0).tickFormat((d)=> abbData[d] ));
+        } else {
+            xAxis = d3.select("#chart1xAxis")
+                .attr("transform", "translate(" + margin.left + "," + height + ")")
+                .call(d3.axisBottom(xScale).ticks(8).tickSizeOuter(0)
+                .tickSizeInner(0).tickFormat((d)=> abbData[d] ));
+        }
 
         xAxis.selectAll("line").style("stroke", "#cdddf7");
         xAxis.selectAll("path").style("stroke", "white");
         xAxis.selectAll("text").style("fill", "#cdddf7");
 
+        if (first) {
         // Add x axis label
         svg.append("text")
             .attr("transform", "translate(" + (3 * width / 4) + "," + (height + 25) + ")")
@@ -159,16 +171,25 @@ function linePlot(province, item) {
             .attr("fill", "#cdddf7")
             .text("日期");
 
+        }
 
         var yScale = d3.scaleLinear()
             .domain([d3.min(yData) * 0.8, d3.max(yData) * 1.2])
             .range([height, 0]);
-
+        let yAxis;
+        if (first) {
         // Add y Axis and horizontal lines
-        var yAxis = svg.append("g")
-            .attr("transform", "translate(" + margin.left + "," + 0 + ")")
-            .call(d3.axisLeft(yScale).tickSizeOuter(0)
-                .tickSizeInner(0));
+            yAxis = svg.append("g")
+                .attr("id", "chart1yAxis")
+                .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+                .call(d3.axisLeft(yScale).tickSizeOuter(0)
+                    .tickSizeInner(0));
+        } else {
+            yAxis = svg.select("#chart1yAxis")
+                .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+                .call(d3.axisLeft(yScale).tickSizeOuter(0)
+                    .tickSizeInner(0));
+        }
 
         yAxis.selectAll("line").style("stroke", "#cdddf7");
         yAxis.selectAll("path").style("stroke", "white");
@@ -195,12 +216,20 @@ function linePlot(province, item) {
         var yRScale = d3.scaleLinear()
             .domain([d3.min(deltaY) * 0.8, d3.max(deltaY) * 1.2])
             .range([height, 0]);
-
+        let yRAxis;
+        if (first) {
         // Add y Axis and horizontal lines
-        var yRAxis = svg.append("g")
-            .attr("transform", "translate(" + (width + margin.left) + "," + 0 + ")")
-            .call(d3.axisRight(yRScale).tickSizeOuter(0)
-                .tickSizeInner(0));
+            yRAxis = svg.append("g")
+             .attr("id", "chart1yRAxis")
+             .attr("transform", "translate(" + (width + margin.left) + "," + 0 + ")")
+             .call(d3.axisRight(yRScale).tickSizeOuter(0)
+                 .tickSizeInner(0));
+        } else {
+            yRAxis = svg.select("#chart1yRAxis")
+                    .attr("transform", "translate(" + (width + margin.left) + "," + 0 + ")")
+                    .call(d3.axisRight(yRScale).tickSizeOuter(0)
+                    .tickSizeInner(0));
+        }
 
         yRAxis.selectAll("line").style("stroke", "#cdddf7");
         yRAxis.selectAll("path").style("stroke", "white");
@@ -243,7 +272,28 @@ function linePlot(province, item) {
               .data(keys)
               .join("g")
                 .attr("transform", (d, i) => `translate(${width / 5},${i * 15})`);
-            g.append("rect")
+            if (first) {
+                g.append("rect")
+                    .attr("id", "chart1LegR")
+                    .attr("x", 0)
+                    .attr("width", 25)
+                    .attr("height", 3)
+                    .attr("fill", function (d, i) {
+                        if (i == 0) {
+                            return "#624041";
+                        } else {
+                            return "#826c4e";
+                        }
+                    });
+                g.append("text")
+                    .attr("id", "chart1LegT")
+                    .attr("fill", "#cdddf7")
+                    .attr("x", -24)
+                    .attr("y", 2.5)
+                    .attr("dy", "0.35em")
+                    .text(d => d);
+            } else {
+                svg.select("#chart1LegR")
                 .attr("x", 0)
                 .attr("width", 25)
                 .attr("height", 3)
@@ -254,25 +304,31 @@ function linePlot(province, item) {
                         return "#826c4e";
                     }
                 });
-          
-            g.append("text")
+             svg.select("id", "#chart1LegT")
                 .attr("fill", "#cdddf7")
                 .attr("x", -24)
                 .attr("y", 2.5)
                 .attr("dy", "0.35em")
-                .text(d => d);
+                .text(d => d); 
+            }
           };
-          svg.append("g").call(legend);
+        if (first) {
+          svg.append("g").attr("id", "chart1Leg").call(legend);
+        } else {
+          svg.select("#chart1Leg").call(legend);
+        }
 
 
         // Add a clipPath: everything out of this area won't be drawn.
-        var clip = svg.append("defs").append("svg:clipPath")
+        if (first) {
+         svg.append("defs").append("svg:clipPath")
             .attr("id", "clip")
             .append("svg:rect")
             .attr("width", width)
             .attr("height", height)
             .attr("x", 0)
             .attr("y", 0);
+        } 
 
         // Add brushing
         var brush = d3.brushX()                   // Add the brush feature using the d3.brush function
@@ -280,10 +336,12 @@ function linePlot(province, item) {
             .on("end", updateChart)               // Each time the brush selection changes, trigger the 'updateChart' function
 
         // Create the area variable: where both the area and the brush take place
-        var area = svg.append('g')
+        let area;
+        if (first) {
+        area = svg.append('g')
             .attr("clip-path", "url(#clip)")
             .attr("transform", "translate(" + 1.05 * margin.left + ","  +"0)")
-
+        }
         // Create an area generator
         var areaGenerator1 = d3.area()
             .x(function (d) { return xScale(d[0]) })
@@ -310,37 +368,66 @@ function linePlot(province, item) {
                 cumulatedColor = "#98FB98";
             }
         }
-
-        // Add the area
-        area.append("path")
-            .datum(allData)
-            .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
-            .attr("fill", cumulatedColor)
-            .attr("fill-opacity", .3)
-            .attr("stroke", "black")
-            .attr("stroke-width", 1)
-            .attr("d", areaGenerator1);
+        let delay = 2000;
+        if (first) {
+            // Add the area
+            area.append("path")
+                .attr("id", "chart1Path")
+                .datum(allData)
+                .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
+                .attr("fill", cumulatedColor)
+                .attr("fill-opacity", .3)
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .attr("d", areaGenerator1);
+        } else {
+            d3.select("#chart1Path")
+                .datum(allData)
+                .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
+                .attr("fill", cumulatedColor)
+                .attr("fill-opacity", .3)
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .transition()
+                // .ease(d3.easeBounceOut)
+                .duration(delay)
+                .attr("d", areaGenerator1);
+        }
 
 
         var allDataDelta = [];
         for (var i = 0; i < xData.length; ++i) {
             allDataDelta.push([xRange[i], deltaY[i]]);
         }
-
-        area.append("path")
-            .datum(allDataDelta)
-            .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
-            .attr("fill", "#FFFF00")
-            .attr("fill-opacity", .3)
-            .attr("stroke", "black")
-            .attr("stroke-width", 1)
-            .attr("d", areaGenerator2);
-
-        // Add the xS
+        if (first) {
+            area.append("path")
+                .attr("id", "chart1Path1")
+                .datum(allDataDelta)
+                .attr("class", "myArea2")  // I add the class myArea to be able to modify it later on.
+                .attr("fill", "#FFFF00")
+                .attr("fill-opacity", .3)
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .attr("d", areaGenerator2);
+        } else {
+            d3.select("#chart1Path1")
+                .datum(allDataDelta)
+                .attr("class", "myArea2")  // I add the class myArea to be able to modify it later on.
+                .attr("fill", "#FFFF00")
+                .attr("fill-opacity", .3)
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .transition()
+                .duration(delay)
+                .attr("d", areaGenerator2);
+        }
+        // // Add the xS
+        if (first) {
         area
             .append("g")
             .attr("class", "brush")
             .call(brush);
+        }
 
         // A function that set idleTimeOut to null
         var idleTimeout
@@ -351,7 +438,6 @@ function linePlot(province, item) {
 
             // What are the selected boundaries?
             extent = d3.event.selection
-            console.log(extent)
 
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if (!extent) {
@@ -379,11 +465,11 @@ function linePlot(province, item) {
                 .transition()
                 .duration(1000)
                 .attr("d", areaGenerator1)
-            // area
-            //     .select('.myArea')
-            //     .transition()
-            //     .duration(1000)
-            //     .attr("d", areaGenerator2)
+            area
+                .select('.myArea2')
+                .transition()
+                .duration(1000)
+                .attr("d", areaGenerator2)
         }
 
         // If user double click, reinitialize the chart
@@ -397,6 +483,11 @@ function linePlot(province, item) {
                 .select('.myArea')
                 .transition()
                 .attr("d", areaGenerator1)
+            area
+                .select('.myArea2')
+                .transition()
+                .duration(1000)
+                .attr("d", areaGenerator2)
         });
     });
 }
