@@ -17,6 +17,10 @@ mod2 = Blueprint('demo2', __name__)
 def demo2():
     return render_template('demo2.html')
 
+@mod2.errorhandler(404)
+def not_found(error):
+    return render_template('404.html',result=404)
+
 @mod2.route("/demo2/KG",methods = ['POST'])
 def getdatafromDB():
     print("check!")
