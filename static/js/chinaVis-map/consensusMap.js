@@ -21,11 +21,13 @@ $(function () {
     var nanshaPath=d3.geoPath().projection(nanshaProjection);
 
     var RFCONSENSUS; // 存储舆论热度
+    var skData;
     var capitalSet={};
     var date='0'+(($("#mainwindow-data").text()).replace(/月/,'-')).replace(/日/,'');
     var brushFlag=1;
     var delay=1000; //动画延迟
     var provinceArr=[];
+    var provinceClickFlag=0;
     // 创建svg
     var consensusChart=d3.select(".chinaMap-box")
         .append("svg")
@@ -51,13 +53,15 @@ $(function () {
     var files = ["static/data/chinaVis-map/china.json?t="+new Date().getTime(),
                 "static/data/chinaVis-map/island.json?t="+new Date().getTime(),
                 "static/data/chinaVis-map/nansha.json?t="+new Date().getTime(),
-                "static/data/RFJSON/RealtimeFlow_cities_All.json?t="+new Date().getTime()];
+                "static/data/RFJSON/RealtimeFlow_cities_All.json?t="+new Date().getTime(),
+                "static/data/RFJSON/RealtimeFlow_relationship_no_date.json?t="+new Date().getTime()];
     var promises=[];
     files.forEach(function (url) {
         promises.push(d3.json(url));
     });
     Promise.all(promises).then(function (values) {
         RFCONSENSUS=values[3];
+        skData=values[4];
         displayConsensusMap(values[0],1,consensusChart);
         displayConsensusMap(values[1],2,nanhaiChart);
         displayConsensusMap(values[2],3,nanhaiChart);
@@ -107,6 +111,9 @@ $(function () {
             drawRect(citiesTop32());
             drawPies();
         });
+
+        drawSankeyChart('湖北省');
+        $(".sankey_chart").hide();
     });
 
     function displayConsensusMap(json,type,chart) {
@@ -115,7 +122,7 @@ $(function () {
                 .data(json.features)
                 .enter()
                 .append("path")
-                .attr("class","china_consensus_map consensus_heatmap")
+                .attr("class","china_consensus_map consensus_heatmap china_consensus_chart")
                 .attr("d",chinaPath)
                 .attr("stroke","white")
                 .attr("stroke-width",0.5)
@@ -125,7 +132,7 @@ $(function () {
                 .data(json.features)
                 .enter()
                 .append("text")
-                .attr("class","consensus_map_text")
+                .attr("class","consensus_map_text china_consensus_chart")
                 .attr("text-anchor","middle")
                 .attr("font-size",10)
                 .attr("x",function(d,i){
@@ -162,7 +169,7 @@ $(function () {
                 .data(json.features)
                 .enter()
                 .append("circle")
-                .attr("class","consensus_map_circle consensus_heatmap")
+                .attr("class","consensus_map_circle consensus_heatmap china_consensus_chart")
                 .attr("cx",function(d,i){
                     if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)||(/澳门/).test(d.properties.name)){
                         return chinaProjection(d.properties.cp)[0]+20;
@@ -454,12 +461,32 @@ $(function () {
                 call_source(selected_time,d.properties.name);
                 call_emotion(selected_time,d.properties.name);
                 BaseLayout(selected_time,d.properties.name);
+
+                let currentProvinceName=getProvinceAbbr(d.properties.name);
+                let existFlag=0;
+                for (let i in provinceArr){
+                    let pattern=eval(`/${currentProvinceName}/`); //利用正则匹配解决简写不一致问题
+                    if(pattern.test(provinceArr[i])){
+                        currentProvinceName=provinceArr[i];
+                        existFlag=1;
+                    }
+                }
+                if(existFlag===0){
+                    return getProvinceAbbr(d.properties.name)+" 0";
+                }
+                if(provinceClickFlag===0){
+                    drawSankeyChart(currentProvinceName);
+                    $(".china_consensus_chart").animate({opacity:0.4},"slow");
+                    $(this).animate({opacity:0.8},"fast");
+                }
+                else{
+                    $(".china_consensus_chart").animate({opacity:0.8},"slow");
+                    $(".sankey_chart").fadeOut("slow");
+                }
+                provinceClickFlag=(provinceClickFlag+1)%2;
             })
             .on("mouseover",function (d) {
-                d3.select(this).style("cursor","pointer")
-                    .transition()
-                    .duration(delay/2)
-                    .attr("opacity",1.0);
+                d3.select(this).style("cursor","pointer");
                 let xPosition=d3.event.clientX-$(".chinaMap-box").offset().left;
                 let yPosition=d3.event.clientY-$(".chinaMap-box").offset().top;
                 d3.select("#my_tooltip")
@@ -486,15 +513,11 @@ $(function () {
                 d3.select("#my_tooltip").classed("my_tooltip_hidden",false);
             })
             .on("mouseout",function (d) {
-                d3.select(this).style("cursor","default")
-                    .transition()
-                    .duration(delay/2)
-                    .attr("opacity",0.8);
+                d3.select(this).style("cursor","default");
                 d3.select("#my_tooltip").classed("my_tooltip_hidden",true);
             });
         d3.selectAll(".heat_rect")
             .on("mouseover",function (d,i) {
-                console.log(d);
                 d3.select(this).style("cursor","pointer")
                     .attr("opacity",1.0);
                 let xPosition=d3.event.clientX-$(".chinaMap-box").offset().left;
@@ -589,6 +612,144 @@ $(function () {
                     return chinaProjection(d.properties.cp)[1];
                 });
         drawPies();
+
+    }
+    // 绘制桑基图
+    function drawSankeyChart(province) {
+        let padding=40;
+        var nodeArr=['封城','复工','新冠','开学','经济','两会','无症状','疫苗','疫情','美国','欧洲',
+                '正面','负面','中立'];
+        for(let sen_key in skData[province]){
+            let sourceSet=skData[province][sen_key]['source'];
+            if(sourceSet!==undefined){
+                let sourceArr=Object.keys(sourceSet).sort(function(a,b){ return sourceSet[b]-sourceSet[a];});
+                let topLen=sourceArr.length>10?10:sourceArr.length;
+                for(let i=0;i<topLen;i++){
+                    if (nodeArr.indexOf(sourceArr[i])===-1){
+                        nodeArr.push(sourceArr[i]);
+                    }
+                }
+            }
+        }
+        var linksArr=function(){
+                var linksArr=[];
+                for(let sen_key in skData[province]){
+                    let senArr=skData[province][sen_key];
+                    if(sen_key==='positive'){
+                        let t=11;
+                        for (let heat_key in senArr['key']){
+                            let s=nodeArr.indexOf(heat_key);
+                            linksArr.push({source:s,target:t,value:senArr['key'][heat_key]});
+                        }
+                        for(let source_key in senArr['source']){
+                            let s=nodeArr.indexOf(source_key);
+                            if(s!==-1){
+                                linksArr.push({source:t,target:s,value:senArr['source'][source_key]});
+                            }
+                        }
+                    }else if(sen_key==='negative'){
+                        let t=12;
+                        for (let heat_key in senArr['key']){
+                            let s=nodeArr.indexOf(heat_key);
+                            linksArr.push({source:s,target:t,value:senArr['key'][heat_key]});
+                        }
+                        for(let source_key in senArr['source']){
+                            let s=nodeArr.indexOf(source_key);
+                            if(s!==-1){
+                                linksArr.push({source:t,target:s,value:senArr['source'][source_key]});
+                            }
+                        }
+                    }else if(sen_key==='neutral'){
+                        let t=13;
+                        for (let heat_key in senArr['key']){
+                            let s=nodeArr.indexOf(heat_key);
+                            linksArr.push({source:s,target:t,value:senArr['key'][heat_key]});
+                        }
+                        for(let source_key in senArr['source']){
+                            let s=nodeArr.indexOf(source_key);
+                            if(s!==-1){
+                                linksArr.push({source:t,target:s,value:senArr['source'][source_key]});
+                            }
+                        }
+                    }
+                }
+                return linksArr;
+            };
+        var nodesArr=nodeArr.map(function(item){
+            return {name:item};
+        });
+
+        var sankeyData={
+            'nodes':nodesArr,
+            'links':linksArr()
+        };
+        var color=d3.schemeCategory10;
+        var sankey = d3.sankey()
+                .nodeWidth(10)
+                .nodePadding(14)
+                .size([width-padding, 0.6*height])
+                .nodes(sankeyData.nodes)
+                .links(sankeyData.links)
+                .layout(3);
+        var path=sankey.link();
+
+        // 绘制连接数据
+        var links = consensusChart.append("g").selectAll("path")
+                    .data(sankeyData.links)
+                    .enter();
+
+        // 绑定节点数据
+        var nodes = consensusChart.append("g").selectAll(".node")
+                        .data(sankeyData.nodes)
+                        .enter();
+        d3.selectAll(".sankey_links").remove();
+        d3.selectAll(".sankey_rects").remove();
+        d3.selectAll(".sankey_text").remove();
+        // 绘制连接线
+        links.append("path")
+            .attr("class","sankey_links sankey_chart")
+            .attr("fill","none")
+            .attr("stroke",function(d,i){
+                return color[i%11];
+            })
+            .attr("stroke-opacity",0.8)
+            .attr("d",path)
+            .attr("id",function(d,i){ return 'link' +i })
+             .attr("stroke-width", function (d) {  //连线的宽度
+                  return Math.max(1, d.dy);
+             });
+
+        nodes.append("rect")
+            .attr("class","sankey_rects sankey_chart")
+            .attr("transform",function (d) {
+              return "translate(" + d.x + "," + d.y + ")";
+           })
+            .attr("height",function(d,i){
+                return d.dy;;
+            })
+            .attr("width",function(d,i){
+                return sankey.nodeWidth();
+            })
+            .style("fill", function (d,i) {
+                if(i===11){
+                    return pieColors[0];
+                }else if(i===12){
+                    return pieColors[1];
+                }else if(i===13){
+                    return pieColors[2];
+                }
+                return "tomato";
+            })
+            .style("stroke", "gray")
+            .attr("rx",3);
+        // 绘制节点文本
+        nodes.append("text")
+            .attr("class","sankey_text sankey_chart")
+            .attr("x",function (d) { return d.x+sankey.nodeWidth(); })
+            .attr("y",function(d){return d.y+d.dy / 2;})
+            .text(function (d) { return d.name; })
+            .attr("font-size",10)
+            .attr("fill","white");
 
     }
 });

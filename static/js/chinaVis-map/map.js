@@ -564,8 +564,8 @@ $(function () {
             .on("mouseover",function(d,i){
                 d3.select(this).style("cursor","pointer")
                     .transition()
-                    .duration(delay/2)
-                    .attr("stroke","rgb(70,130,180)").attr("opacity",1.0);
+                    .duration(delay/4)
+                    .attr("stroke","rgb(70,130,180)").attr("stroke-width",1.5);
                 let xPosition=d3.event.clientX-$("#china_heatmap_div").offset().left;
                 let yPosition=d3.event.clientY-$("#china_heatmap_div").offset().top;
                 d3.select("#my_tooltip")
@@ -581,8 +581,8 @@ $(function () {
             .on("mouseout",function(d,i){
                 d3.select(this).style("cursor","default")
                     .transition()
-                    .duration(delay/2)
-                    .attr("stroke","black").attr("opacity",0.6);
+                    .duration(delay/4)
+                    .attr("stroke","black").attr("stroke-width",0.5);
                 d3.select("#my_tooltip").classed("my_tooltip_hidden",true);
             })
             .on("click",displayProvince);
@@ -604,7 +604,11 @@ $(function () {
             chart5Export(getProvinceAbbr(d.properties.name));
 
             $("#chart_2_title").text(getProvinceAbbr(d.properties.name)+"疫情状况");
-
+            d3.selectAll(".china_map").attr("opacity",0.6);
+            d3.select(this).style("cursor","pointer")
+                    .transition()
+                    .duration(delay/2)
+                    .attr("stroke","rgb(70,130,180)").attr("opacity",1.0);
             $("#province_heatmap_svg").empty();
             provinceLabel();
             provincePageFlag=1;

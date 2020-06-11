@@ -125,6 +125,7 @@ function drawPieChart(pieArr,origin,gChart,colors,radius){
                     .data(pie(pieArr))
                     .enter()
                     .append("g")
+                    .attr("class","china_consensus_chart")
                     .attr("transform","translate("+origin.x+","+origin.y+")");
     arcs.append("path")
         .attr("class","arc")
@@ -155,7 +156,8 @@ function drawPieChart(pieArr,origin,gChart,colors,radius){
             d3.select(this)
                 .transition()
                 .duration(200)
-                .attr("transform","scale(1)");
+                .attr("transform","scale(1)")
+                .attr("opacity",0.8);
             d3.select("#my_tooltip").classed("my_tooltip_hidden",false);
         })
         .transition()
