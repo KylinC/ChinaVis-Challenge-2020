@@ -27,7 +27,9 @@ function layoutKG(input_data){
     option = {
         title: {
         },
-        tooltip: {},
+        tooltip: {
+            position:"right"
+        },
         animationDurationUpdate: function(idx) {
             return idx * 1100;
         },
