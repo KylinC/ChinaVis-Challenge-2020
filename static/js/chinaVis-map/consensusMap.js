@@ -454,6 +454,7 @@ $(function () {
                 call_source(selected_time,d.properties.name);
                 call_emotion(selected_time,d.properties.name);
                 BaseLayout(selected_time,d.properties.name);
+                document.getElementById("strictid").innerHTML=d.properties.name.slice(0,2);
             })
             .on("mouseover",function (d) {
                 d3.select(this).style("cursor","pointer")

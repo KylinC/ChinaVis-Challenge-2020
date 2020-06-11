@@ -21,7 +21,7 @@ function source(source_data,time_str){
                 name: legend_data[i],
                 type: 'bar',
                 barWidth: 30,// 柱形的宽度
-                barGap: 0.5,
+                barGap: 1,
                 data: [source_value[i]]
             }
         )
