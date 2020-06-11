@@ -628,7 +628,7 @@ pre {
     top: 60%;
     left: 30%;
     overflow: hidden;
-    display: none;
+    display: block;
 }
 
 .time-div {

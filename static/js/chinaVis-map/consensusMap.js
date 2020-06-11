@@ -461,7 +461,6 @@ $(function () {
                 call_source(selected_time,d.properties.name);
                 call_emotion(selected_time,d.properties.name);
                 BaseLayout(selected_time,d.properties.name);
-
                 let currentProvinceName=getProvinceAbbr(d.properties.name);
                 let existFlag=0;
                 for (let i in provinceArr){
@@ -484,6 +483,7 @@ $(function () {
                     $(".sankey_chart").fadeOut("slow");
                 }
                 provinceClickFlag=(provinceClickFlag+1)%2;
+                document.getElementById("strictid").innerHTML=d.properties.name.slice(0,2);
             })
             .on("mouseover",function (d) {
                 d3.select(this).style("cursor","pointer");

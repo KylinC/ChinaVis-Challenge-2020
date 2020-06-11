@@ -3,15 +3,17 @@ const emotionChart = echarts.init(document.getElementById("emotion"));
 function call_emotion(time_str,area_str){
     $.getJSON("static/data/Emotion/"+area_str+".json", function (data){
         var source_data=data[time_str];
-        emotion(source_data);
+        emotion(time_str,source_data);
     })
 }
 
 var tag_container;
 
-function emotion(source_data){
+function emotion(time_str,source_data){
 
-    var weekDay = 0;
+    var weekDay=source_data[0].indexOf('5-'+time_str);
+
+    // var weekDay = 3;
     var data = [source_data[1][1], source_data[1][2], source_data[1][0]]
     tag_container=source_data[0];
 
@@ -128,7 +130,7 @@ function emotion(source_data){
         }, {
             name: 'Emotion',
             type: 'pie',
-            radius: ['68%', '76%'],
+            radius: ['64%', '72%'],
             avoidLabelOverlap: false,
             label: {
                 normal: {
@@ -147,7 +149,9 @@ function emotion(source_data){
             },
             labelLine: {
                 normal: {
-                    show: false
+                    length:"5",
+                    length2:"5",
+                    show: true
                 }
             },
             data: [{
@@ -194,11 +198,21 @@ function emotion(source_data){
     function tooltipFormatter(params) {
         var valuesFormatter = [];
         if (params.componentSubType == 'pie') {
-            valuesFormatter.push(
-                '<div style="border-bottom: 1px solid rgba(255,255,255,.3);color:rgb(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
-                Eoption.angleAxis.data[weekDay] + '<br>' + '</div>' +
-                '<span style="color:' + params.color + '">' + params.name + '</span>: ' + params.value
-            );
+            let tmp=Eoption.angleAxis.data[weekDay];
+            if(typeof tmp == 'string'){
+                valuesFormatter.push(
+                    '<div style="border-bottom: 1px solid rgba(255,255,255,.3);color:rgb(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
+                    Eoption.angleAxis.data[weekDay] + '<br>' + '</div>' +
+                    '<span style="color:' + params.color + '">' + params.name + '</span>: ' + params.value
+                );
+            }else{
+                valuesFormatter.push(
+                    '<div style="border-bottom: 1px solid rgba(255,255,255,.3);color:rgb(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
+                    Eoption.angleAxis.data[weekDay]['value'] + '<br>' + '</div>' +
+                    '<span style="color:' + params.color + '">' + params.name + '</span>: ' + params.value
+                );
+            }
+            
         } else {
             valuesFormatter.push(
                 '<div style="border-bottom: 1px solid rgba(255,255,255,.3);color:rgb(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
