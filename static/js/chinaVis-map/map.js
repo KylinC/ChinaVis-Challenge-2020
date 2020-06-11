@@ -76,13 +76,25 @@ $(function () {
 
     // 初始化图例
     function initialLabelChart(){
-        drawLineChart([4,6,16,10,8,12,3],{x:20,y:60},chinaSvg,circleColors[caseType-1]);
+        drawLineChart([4,6,16,10,8,12,3],{x:20,y:40},chinaSvg,circleColors[caseType-1]);
+        chinaSvg.append("text")
+            .attr("x",44)
+            .attr("y",40)
+            .attr("font-size",10)
+            .attr("fill","white")
+            .text("前一周新增趋势");
+        chinaSvg.append("circle")
+            .attr("cx",30)
+            .attr("cy",56)
+            .attr("r",8)
+            .attr("fill",circleColors[caseType-1])
+            .attr("opacity",0.5);
         chinaSvg.append("text")
             .attr("x",44)
             .attr("y",60)
             .attr("font-size",10)
             .attr("fill","white")
-            .text("前一周新增趋势");
+            .text("当日新增病例");
     }
     initialLabelChart();
     createDateSeletor();
@@ -145,8 +157,8 @@ $(function () {
                     }
                     return chinaProjection(d.properties.cp)[1];
                 })
-                .attr("opacity",0.8)
-                .attr("r",0);
+                .attr("opacity",0.8);
+
             chinaSvg.selectAll(".chinaPathText")
                 .data(json.features)
                 .enter()
@@ -238,7 +250,7 @@ $(function () {
         })
     }
 
-    /** 显示新增源泉 */
+    /** 显示新增 */
     function showCaseCircle(json){
         $(".gChart").empty();
         d3.selectAll(".china_map_circle").call(function(sel){
@@ -291,6 +303,7 @@ $(function () {
                 // 会绘制line chart图形
                 let gChart=chinaSvg.append("g").attr("class","gChart");
                 drawLineChart(lineDataArr,origin,gChart,circleColors[caseType-1]);
+                d3.select(this).attr("r",lineDataArr[0]).attr("fill",circleColors[caseType-1]).attr("opacity",0.5);
             });
 
         });
@@ -450,6 +463,7 @@ $(function () {
             loadCurrentDateCase();
             mapLabel();
             fillProvinceColor();
+            initialLabelChart();
         });
         $("#cured_button").click(function(){
             caseType=2;
@@ -458,6 +472,7 @@ $(function () {
             loadCurrentDateCase();
             mapLabel();
             fillProvinceColor();
+            initialLabelChart();
         });
         $("#dead_button").click(function(){
             caseType=3;
@@ -466,6 +481,7 @@ $(function () {
             loadCurrentDateCase();
             mapLabel();
             fillProvinceColor();
+            initialLabelChart();
         });
 
         /** 日期选择监听事件 */
@@ -493,12 +509,16 @@ $(function () {
 
         /** 省份圆圈标签 */
         function provinceLabel() {
+            var padding=20;
+            var scaleX=d3.scaleLinear()
+                .domain([0,8])
+                .range([padding,pWidth-2*padding]);
             provinceSvg.selectAll("circleLabel")
                 .data(currentColorGradient)
                 .enter()
                 .append("circle")
                 .attr("cx",function (d,i) {
-                    return 20+i*36;
+                    return scaleX(i);
                 })
                 .attr("cy",function (d,i) {
                     return pHeight-24;
@@ -521,7 +541,7 @@ $(function () {
                 .append("text")
                 .attr("class","province_circle_text")
                 .attr("x",function (d,i) {
-                    return 20+i*36;
+                    return scaleX(i);
                 })
                 .attr("y",function (d,i) {
                     return pHeight;
@@ -582,6 +602,8 @@ $(function () {
             chart3Export(getProvinceAbbr(d.properties.name));
             chart4Export(getProvinceAbbr(d.properties.name));
             chart5Export(getProvinceAbbr(d.properties.name));
+
+            $("#chart_2_title").text(getProvinceAbbr(d.properties.name)+"疫情状况");
 
             $("#province_heatmap_svg").empty();
             provinceLabel();
@@ -873,6 +895,28 @@ $(function () {
                 }
                 return chinaProjection(d.properties.cp)[1];
             });
+        d3.selectAll(".china_map_circle")
+            .attr("cx",function(d,i){
+                if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)||(/澳门/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[0]+20;
+                }
+                else if((/香港/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[0]+10;
+                }
+                else if((/甘肃/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[0]+20;
+                }
+                return chinaProjection(d.properties.cp)[0];
+            })
+            .attr("cy",function(d,i){
+                if((/黑龙/).test(d.properties.name)||(/内蒙/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[1]+30;
+                }
+                else if((/澳门/).test(d.properties.name)||(/香港/).test(d.properties.name)){
+                    return chinaProjection(d.properties.cp)[1]+10;
+                }
+                return chinaProjection(d.properties.cp)[1];
+            });
         loadCurrentDateCase();
     }
     // 省份缩放
@@ -899,4 +943,11 @@ $(function () {
                 return provinceProjection(d.properties.cp)[1];
             });
     }
+
+    // 动画
+    // setInterval(function () {
+    //     currentDateStr=getNextDate('2020-'+currentDateStr);
+    //     loadCurrentDateCase();
+    // },1000);
+
 });
