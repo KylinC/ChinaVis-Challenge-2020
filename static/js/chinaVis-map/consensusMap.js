@@ -481,7 +481,9 @@ $(function () {
                 else{
                     $(".china_consensus_chart").animate({opacity:0.8},"slow");
                     $(".sankey_chart").fadeOut("slow");
+                    $(this).animate({opacity:1.0},"fast");
                 }
+
                 provinceClickFlag=(provinceClickFlag+1)%2;
                 document.getElementById("strictid").innerHTML=d.properties.name.slice(0,2);
             })
