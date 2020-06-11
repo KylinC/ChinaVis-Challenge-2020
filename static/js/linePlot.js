@@ -260,6 +260,16 @@ function linePlot(province, item, first) {
         } else {
             chItem = '死亡';
         }
+        var cumulatedColor = ""
+        if (item == "confirmed") {
+            cumulatedColor = "#F08080";
+        } else {
+            if (item == "dead") {
+                cumulatedColor = "#C0C0C0";
+            } else {
+                cumulatedColor = "#98FB98";
+            }
+        }
         let keys = [chItem + "累计量", chItem + "新增量"]
         // Reverse time value
         let legend = svg => {
@@ -280,9 +290,9 @@ function linePlot(province, item, first) {
                     .attr("height", 3)
                     .attr("fill", function (d, i) {
                         if (i == 0) {
-                            return "#624041";
+                            return cumulatedColor;
                         } else {
-                            return "#826c4e";
+                            return "#FFFF00";
                         }
                     });
                 g.append("text")
@@ -299,9 +309,9 @@ function linePlot(province, item, first) {
                 .attr("height", 3)
                 .attr("fill", function (d, i) {
                     if (i == 0) {
-                        return "#624041";
+                        return cumulatedColor;
                     } else {
-                        return "#826c4e";
+                        return "#FFFF00";
                     }
                 });
              svg.select("id", "#chart1LegT")
@@ -358,16 +368,6 @@ function linePlot(province, item, first) {
             allData.push([xRange[i], yData[i]]);
         }
 
-        var cumulatedColor = ""
-        if (item == "confirmed") {
-            cumulatedColor = "#F08080";
-        } else {
-            if (item == "dead") {
-                cumulatedColor = "#C0C0C0";
-            } else {
-                cumulatedColor = "#98FB98";
-            }
-        }
         let delay = 2000;
         if (first) {
             // Add the area
@@ -423,10 +423,10 @@ function linePlot(province, item, first) {
         }
         // // Add the xS
         if (first) {
-        area
-            .append("g")
-            .attr("class", "brush")
-            .call(brush);
+        // area
+        //     .append("g")
+        //     .attr("class", "brush")
+        //     .call(brush);
         }
 
         // A function that set idleTimeOut to null
