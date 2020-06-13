@@ -517,6 +517,7 @@ $(function () {
                 .data(currentColorGradient)
                 .enter()
                 .append("circle")
+                .attr("class","province_label")
                 .attr("cx",function (d,i) {
                     return scaleX(i);
                 })
@@ -847,6 +848,7 @@ $(function () {
                         .text(function(d){
                             return d.properties.name;
                         })
+                provinceLabel();
                 });
         }
 
