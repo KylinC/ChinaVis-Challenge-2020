@@ -11,7 +11,7 @@ $(function () {
     var height=$(".chinaMap-box").height();
     var width=$(".chinaMap-box").width();
     var mapCenterPos={x:width/2,y:height/2};
-    var colorLab=d3.interpolateLab("rgb(255,255,255)","#ff9900");
+    var colorLab=d3.interpolateLab("rgb(255,255,255)","#33ccff");
     var pieColors=["#ff4d4d","#ffff66","#ff9933"];
     var chinaScale=0.9*width;
 
@@ -228,6 +228,22 @@ $(function () {
      * 绘制热度饼图
      * */
     function drawPies() {
+        // d3.selectAll(".consensus_heatmap").attr("fill",function (d,i) {
+        //     let provinceName=getProvinceAbbr(d.properties.name);
+        //     let currentProvinceArr=Object.keys(RFCONSENSUS[date]);
+        //     let existFlag=0;
+        //     for (let i in currentProvinceArr){
+        //         let pattern=eval(`/${provinceName}/`); //利用正则匹配解决简写不一致问题
+        //         if(pattern.test(currentProvinceArr[i])){
+        //             provinceName=currentProvinceArr[i];
+        //             existFlag=1;
+        //         }
+        //     }
+        //     if(existFlag===0){
+        //         return 0;
+        //     }
+        //     return colorLab(Math.sqrt(RFCONSENSUS[date][provinceName]['sum'])/33);
+        // });
         $(".gChart").empty();
         d3.selectAll(".consensus_map_circle").call(function(sel){
             sel.each(function (d,i) {
