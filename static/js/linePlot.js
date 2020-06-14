@@ -270,10 +270,12 @@ function linePlot(province, item, first) {
                 cumulatedColor = "#98FB98";
             }
         }
-        let keys = [chItem + "累计量", chItem + "新增量"]
+        let keys = [chItem + "累计量", chItem + "新增量"];
         // Reverse time value
         let legend = svg => {
-            const g = svg
+
+            let g;
+            g = svg
                 .attr("transform", `translate(100,10)`)
                 .attr("text-anchor", "end")
                 .attr("font-family", "sans-serif")
@@ -282,6 +284,8 @@ function linePlot(province, item, first) {
               .data(keys)
               .join("g")
                 .attr("transform", (d, i) => `translate(${width / 5},${i * 15})`);
+
+
             if (first) {
                 g.append("rect")
                     .attr("id", "chart1LegR")
@@ -303,7 +307,7 @@ function linePlot(province, item, first) {
                     .attr("dy", "0.35em")
                     .text(d => d);
             } else {
-                svg.select("#chart1LegR")
+                g.select("#chart1LegR")
                 .attr("x", 0)
                 .attr("width", 25)
                 .attr("height", 3)
@@ -314,7 +318,7 @@ function linePlot(province, item, first) {
                         return "#FFFF00";
                     }
                 });
-             svg.select("id", "#chart1LegT")
+             g.select("#chart1LegT")
                 .attr("fill", "#cdddf7")
                 .attr("x", -24)
                 .attr("y", 2.5)
